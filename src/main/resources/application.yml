@@ -1,0 +1,200 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on-param
+
+spring:
+  application:
+    name: freshman-orientation
+
+  # 数据源配置 - MySQL
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/freshman_orientation?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: 123456
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+
+  # Thymeleaf配置
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+  # H2控制台
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.freshman.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com.freshman: debug
+    org.springframework.security: info
+
+# 自定义配置
+app:
+  name: 智慧迎新系统
+  version: 1.0.0
+  school: 东北石油大学
+  upload-path: ./uploads
+
+  # ========== AI 问答配置 ==========
+  ai:
+    # 本地语义匹配引擎配置
+    local:
+      # 未知问题置信度阈值(0-1)，低于此值判定为未知问题
+      confidence-threshold: 0.25
+      # 是否启用同义词扩展
+      synonym-expansion: true
+
+    # ==========================================
+    # 大模型API扩展配置（可选，默认关闭）
+    # 支持 阿里Qwen / DeepSeek / 智谱GLM / Moonshot 等 OpenAI兼容API
+    # 启用方式：将 enabled 设为 true，填入对应的 api-key 即可
+    # 不启用时，系统使用本地TF-IDF语义引擎，同样智能且完全离线
+    # ==========================================
+    llm:
+      # ---------- 开关 ----------
+      enabled: true          # 是否启用外部大模型API
+
+      # ---------- 当前使用的模型 ----------
+      provider: qwen         # 可选项: qwen / deepseek / glm / moonshot / openai / custom
+      apiKey: "sk-ws-H.EDHRMRL.KP5U.MEUCIQDX-HibgBxNyHwNYzrAbYCaTStnBmrsALDrydp8gUXDJwIgCPjx6U8itiD7q_AMfCVTDuO3uVHJl502A70CLEwf1FA"
+      apiUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+      model: "qwen-plus"    # 千问Plus（已验证可用）
+      timeout: 30000         # 请求超时(毫秒)
+      maxTokens: 800         # 最大输出token数
+      temperature: 0.7       # 随机性(0-2)，越低越确定
+
+    # ==========================================
+    # DeepSeek 问答（独立页面 /deepseek-chat）
+    # 获取 API Key：https://platform.deepseek.com
+    #   注册登录 → 左侧「API keys」→ 创建 API key → 复制粘贴到下面 apiKey
+    # DeepSeek 为付费 API（注册赠送额度），每个 key 只属于一个账号
+    # ==========================================
+    deepseek:
+      enabled: true            # 是否启用 DeepSeek 问答
+      apiKey: ""               # ← 在这里粘贴你的 DeepSeek API Key（sk-开头）
+      apiUrl: "https://api.deepseek.com/v1/chat/completions"
+      model: "deepseek-v4-flash"   # deepseek-v4-flash=主力模型(快+便宜) / deepseek-v4-pro=推理加强(约3倍价格)
+                                   # 注意：deepseek-chat / deepseek-reasoner 已于 2026-07-24 下线，调用会直接报错
+      useRag: false            # 是否启用RAG(检索本地知识库增强回答)。false=纯大模型自由回答（不依赖ai_knowledge表）
+                               # true=先从知识库检索Top3材料注入提示词，DeepSeek基于材料回答（学校信息更准确）
+      timeout: 30000           # 请求超时(毫秒)
+#      maxTokens: 800           # 最大输出token数
+#      temperature: 0.7         # 随机性(0-2)，越低越确定
+
+      # ==========================================
+      # 【免费API获取指南】（2026年7月更新）
+      # ==========================================
+      #
+      # ① 阿里云百炼 - 通义千问 Qwen（推荐！国内最稳）
+      #    免费额度：新用户100万tokens/模型，有效期90天
+      #    注册：https://bailian.console.aliyun.com
+      #    获取API-Key：控制台 → API-KEY管理 → 创建新的API-KEY
+      #    ⚠️ qwen-turbo 已于 2026.7.13 下线，请使用以下替代模型：
+      #    模型选择（按需选一个）：
+      #      model: "qwen3-turbo"      ← 推荐！极速低价，0.3元/百万token
+      #      model: "qwen-plus"        ← 效果/成本均衡
+      #      model: "qwen-flash"       ← 超快超省，适合简单问答
+      #      model: "qwen-max"         ← 最强能力，适合复杂任务
+      #    配置示例：
+      #      enabled: true
+      #      provider: qwen
+      #      api-key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      #      api-url: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+      #      model: "qwen3-turbo"
+      #
+      # ② DeepSeek（最强国产推理能力）
+      #    免费额度：注册赠送10元额度，够用很久
+      #    注册：https://platform.deepseek.com
+      #    获取API-Key：控制台 → API Keys → 创建
+      #    配置示例：
+      #      enabled: true
+      #      provider: deepseek
+      #      api-key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      #      api-url: "https://api.deepseek.com/v1/chat/completions"
+      #      model: "deepseek-chat"
+      #
+      # ③ 智谱AI - GLM-4-Flash（完全免费！）
+      #    免费额度：GLM-4-Flash 模型完全免费，无限制
+      #    注册：https://open.bigmodel.cn
+      #    获取API-Key：控制台 → API Keys → 创建
+      #    配置示例：
+      #      enabled: true
+      #      provider: glm
+      #      api-key: "xxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxx"
+      #      api-url: "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+      #      model: "glm-4-flash"       ← 完全免费！
+      #
+      # ④ Moonshot - Kimi
+      #    免费额度：注册赠送15元额度
+      #    注册：https://platform.moonshot.cn
+      #    获取API-Key：控制台 → API Keys → 创建
+      #    配置示例：
+      #      enabled: true
+      #      provider: moonshot
+      #      api-key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      #      api-url: "https://api.moonshot.cn/v1/chat/completions"
+      #      model: "moonshot-v1-8k"
+      #
+      # ⑤ 零一万物 - Yi
+      #    免费额度：注册赠送额度
+      #    注册：https://platform.lingyiwanwu.com
+      #    配置示例：
+      #      enabled: true
+      #      provider: yi
+      #      api-key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      #      api-url: "https://api.lingyiwanwu.com/v1/chat/completions"
+      #      model: "yi-large"
+      #
+      # ⑥ OpenAI / 其他兼容API
+      #    配置示例：
+      #      enabled: true
+      #      provider: openai
+      #      api-key: "sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      #      api-url: "https://api.openai.com/v1/chat/completions"
+      #      model: "gpt-3.5-turbo"

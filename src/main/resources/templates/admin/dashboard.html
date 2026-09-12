@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>管理员后台 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="bg-dark text-white py-4" style="background: linear-gradient(135deg, #212529 0%, #495057 100%);">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-gear-fill"></i> 管理员后台</h2>
+            <p class="mb-0 opacity-75">系统管理与数据概览</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 统计卡片 -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3 col-sm-6" th:each="entry : ${stats}">
+                <div class="card border-0 shadow-sm text-center h-100">
+                    <div class="card-body p-4">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             th:classappend="${entryStat.index == 0} ? 'bg-primary bg-opacity-10' : (${entryStat.index == 1} ? 'bg-success bg-opacity-10' : (${entryStat.index == 2} ? 'bg-warning bg-opacity-10' : 'bg-info bg-opacity-10'))"
+                             style="width: 70px; height: 70px;">
+                            <i class="bi bi-people-fill text-primary" th:classappend="${entryStat.index == 0} ? 'text-primary' : (${entryStat.index == 1} ? 'text-success' : (${entryStat.index == 2} ? 'text-warning' : 'text-info'))"
+                               style="font-size: 1.8rem;"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" th:text="${entry.value}">0</h3>
+                        <p class="text-muted mb-0 small" th:text="${entry.key}">统计项</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快捷管理入口 -->
+        <h4 class="fw-bold mb-4"><i class="bi bi-speedometer2"></i> 快捷管理</h4>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <a th:href="@{/admin/news}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-primary bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-newspaper text-primary me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">新闻管理</h5>
+                                    <p class="mb-0 text-muted small">发布与管理新闻资讯</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/admin/users}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-success bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-people text-success me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">用户管理</h5>
+                                    <p class="mb-0 text-muted small">管理用户账号与权限</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a th:href="@{/admin/buildings}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-warning bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-building text-warning me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">建筑管理</h5>
+                                    <p class="mb-0 text-muted small">管理校园建筑信息</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mt-3">
+                <a th:href="@{/admin/faqs}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-info bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-question-circle text-info me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">FAQ管理</h5>
+                                    <p class="mb-0 text-muted small">管理常见问题与解答</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mt-3">
+                <a th:href="@{/admin/majors}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-danger bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-journal-bookmark text-danger me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">专业管理</h5>
+                                    <p class="mb-0 text-muted small">管理专业信息与介绍</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 mt-3">
+                <a th:href="@{/admin/dormitories}" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm hover-shadow bg-secondary bg-opacity-10">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-house text-secondary me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <h5 class="mb-1 text-dark">宿舍管理</h5>
+                                    <p class="mb-0 text-muted small">管理宿舍与分配信息</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

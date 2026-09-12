@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>建筑管理 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <section class="bg-dark text-white py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> 后台管理 / 建筑管理</h5>
+                <a th:href="@{/admin}" class="btn btn-sm btn-outline-light"><i class="bi bi-arrow-left"></i> 返回仪表盘</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <small class="text-muted">共 <strong th:text="${#lists.size(buildings)}">0</strong> 个建筑</small>
+            <a th:href="@{/admin/buildings/edit}" class="btn btn-primary btn-sm">
+                <i class="bi bi-plus-lg"></i> 新增建筑
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:5%">ID</th>
+                            <th style="width:14%">名称</th>
+                            <th style="width:10%">分类</th>
+                            <th style="width:18%">地址</th>
+                            <th style="width:7%">楼层</th>
+                            <th style="width:10%">开放时间</th>
+                            <th style="width:8%">状态</th>
+                            <th style="width:6%">排序</th>
+                            <th style="width:22%" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${buildings}">
+                            <td th:text="${b.id}">1</td>
+                            <td>
+                                <strong th:text="${b.name}">名称</strong>
+                                <br><small class="text-muted" th:text="${#strings.length(b.tags) > 20 ? #strings.substring(b.tags, 0, 20) + '...' : b.tags}">标签</small>
+                            </td>
+                            <td><span class="badge bg-secondary" th:text="${b.category}">分类</span></td>
+                            <td><small th:text="${b.address}">地址</small></td>
+                            <td th:text="${b.floors}">0</td>
+                            <td><small th:text="${b.openingHours}">时间</small></td>
+                            <td>
+                                <span th:if="${b.status == 1}" class="badge bg-success">显示</span>
+                                <span th:unless="${b.status == 1}" class="badge bg-secondary">隐藏</span>
+                            </td>
+                            <td th:text="${b.sort}">0</td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/buildings/edit(id=${b.id})}" class="btn btn-outline-primary btn-sm me-1">
+                                    <i class="bi bi-pencil"></i> 编辑
+                                </a>
+                                <form th:action="@{/admin/buildings/delete/{id}(id=${b.id})}" method="post"
+                                      style="display:inline"
+                                      onsubmit="return confirm('确定要删除建筑「'+${b.name}+'」吗？');">
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(buildings)}">
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                                <p class="mt-2 mb-0">暂无建筑数据，点击右上角"新增建筑"开始添加</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

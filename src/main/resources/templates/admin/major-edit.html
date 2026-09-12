@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title th:text="${major.id != null} ? '编辑专业' : '新增专业'">专业编辑</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <section class="bg-dark text-white py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> 后台管理 / 专业管理 / <span th:text="${major.id != null} ? '编辑' : '新增'">编辑</span></h5>
+                <a th:href="@{/admin/majors}" class="btn btn-sm btn-outline-light"><i class="bi bi-arrow-left"></i> 返回专业列表</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0 fw-bold" th:text="${major.id != null} ? '编辑专业' : '新增专业'">编辑专业</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/majors/save}" method="post">
+                            <input type="hidden" name="id" th:value="${major.id}" th:if="${major.id != null}">
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">专业名称 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="name" required
+                                           th:value="${major.name}" placeholder="如：软件工程">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">学院 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="college" required
+                                           th:value="${major.college}" placeholder="如：计算机与信息技术学院">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">专业代码 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="code" required
+                                           th:value="${major.code}" placeholder="如：080902">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">学位 <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="degree" required>
+                                        <option value="">请选择</option>
+                                        <option value="工学学士" th:selected="${major.degree == '工学学士'}">工学学士</option>
+                                        <option value="理学学士" th:selected="${major.degree == '理学学士'}">理学学士</option>
+                                        <option value="管理学学士" th:selected="${major.degree == '管理学学士'}">管理学学士</option>
+                                        <option value="经济学学士" th:selected="${major.degree == '经济学学士'}">经济学学士</option>
+                                        <option value="文学学士" th:selected="${major.degree == '文学学士'}">文学学士</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">学制（年）</label>
+                                    <input type="number" class="form-control" name="duration"
+                                           th:value="${major.duration != null ? major.duration : 4}" placeholder="4">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">专业特色</label>
+                                    <input type="text" class="form-control" name="features"
+                                           th:value="${major.features}" placeholder="如：国家级一流本科专业建设点">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">专业介绍</label>
+                                <textarea class="form-control" name="description" rows="3"
+                                          placeholder="专业培养目标和方向" th:text="${major.description}"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">主要课程</label>
+                                <textarea class="form-control" name="courses" rows="3"
+                                          placeholder="列出核心课程，如：数据结构、操作系统、计算机网络..."
+                                          th:text="${major.courses}"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">就业前景</label>
+                                <textarea class="form-control" name="careerProspect" rows="3"
+                                          placeholder="就业方向和前景分析" th:text="${major.careerProspect}"></textarea>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">状态</label>
+                                    <select class="form-select" name="status">
+                                        <option value="1" th:selected="${major.status == null or major.status == 1}">显示</option>
+                                        <option value="0" th:selected="${major.status == 0}">隐藏</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">排序</label>
+                                    <input type="number" class="form-control" name="sort"
+                                           th:value="${major.sort != null ? major.sort : 0}">
+                                    <div class="form-text">数字越小越靠前</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i>
+                                    <span th:text="${major.id != null} ? '更新' : '添加'">操作</span>
+                                </button>
+                                <a th:href="@{/admin/majors}" class="btn btn-outline-secondary">取消</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

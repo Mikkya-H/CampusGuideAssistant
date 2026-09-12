@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>首页 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 英雄区域 -->
+    <section class="hero-section text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-badge">
+                        <i class="bi bi-star-fill"></i> 1960年建校 · 大庆精神铸就
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">欢迎来到东北石油大学</h1>
+                    <p class="lead mb-4">一站式新生入学服务平台，助你快速了解校园环境、掌握报到流程、融入大学生活，开启属于你的大学篇章。</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <a th:href="@{/guide/registration}" class="btn btn-light btn-lg px-4">
+                            <i class="bi bi-clipboard-check"></i> 查看报到流程
+                        </a>
+                        <a th:href="@{/campus}" class="btn btn-outline-light btn-lg px-4">
+                            <i class="bi bi-map"></i> 浏览校园地图
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center d-none d-lg-block">
+                    <i class="bi bi-mortarboard-fill" style="font-size: 15rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数据速览 -->
+    <div class="container py-4">
+        <div class="row g-3 text-center">
+            <div class="col-4">
+                <div class="fw-bold mb-1" style="font-size: 1.6rem; color: var(--nepu-primary);">14</div>
+                <small class="text-muted">教学院部</small>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold mb-1" style="font-size: 1.6rem; color: var(--nepu-primary);">60+</div>
+                <small class="text-muted">本科专业</small>
+            </div>
+            <div class="col-4">
+                <div class="fw-bold mb-1" style="font-size: 1.6rem; color: var(--nepu-primary);">1960</div>
+                <small class="text-muted">建校年份</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能卡片区域 -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-2 fw-bold">快速上手，玩转校园</h2>
+            <p class="text-center text-muted mb-5">四大核心功能，助你轻松开启大学生活</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3 animate-in">
+                    <div class="card h-100 border-0 shadow-sm text-center hover-shadow feature-card">
+                        <div class="card-body p-4">
+                            <div class="icon-circle bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <h5 class="card-title">校园导览</h5>
+                            <p class="card-text text-muted">探索校园建筑，熟悉教学楼、图书馆、食堂等场所位置。</p>
+                            <a th:href="@{/campus}" class="btn btn-outline-primary btn-sm">开始探索 <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-in">
+                    <div class="card h-100 border-0 shadow-sm text-center hover-shadow feature-card">
+                        <div class="card-body p-4">
+                            <div class="icon-circle bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-clipboard-check-fill"></i>
+                            </div>
+                            <h5 class="card-title">报到流程</h5>
+                            <p class="card-text text-muted">清晰的报到步骤指引，助你顺利完成入学手续办理。</p>
+                            <a th:href="@{/guide/registration}" class="btn btn-outline-success btn-sm">查看流程 <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-in">
+                    <div class="card h-100 border-0 shadow-sm text-center hover-shadow feature-card">
+                        <div class="card-body p-4">
+                            <div class="icon-circle bg-warning bg-opacity-10 text-warning">
+                                <i class="bi bi-heart-fill"></i>
+                            </div>
+                            <h5 class="card-title">校园生活</h5>
+                            <p class="card-text text-muted">了解宿舍、食堂、社团、活动，快速适应校园节奏。</p>
+                            <a th:href="@{/life/dormitory}" class="btn btn-outline-warning btn-sm">了解更多 <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3 animate-in">
+                    <div class="card h-100 border-0 shadow-sm text-center hover-shadow feature-card">
+                        <div class="card-body p-4">
+                            <div class="icon-circle bg-info bg-opacity-10 text-info">
+                                <i class="bi bi-chat-dots-fill"></i>
+                            </div>
+                            <h5 class="card-title">交流社区</h5>
+                            <p class="card-text text-muted">与同学们互动交流，分享经验、结交朋友、共同成长。</p>
+                            <a th:href="@{/forum}" class="btn btn-outline-info btn-sm">加入社区 <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 学校精神标语 -->
+    <section class="spirit-section">
+        <div class="container">
+            <p class="spirit-quote">严谨 · 朴实 · 勤奋 · 创新</p>
+            <p class="spirit-sub">东北石油大学校风 · 大庆精神铁人精神薪火相传</p>
+        </div>
+    </section>
+
+    <!-- 最新资讯 -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold mb-0">最新资讯</h2>
+                <a th:href="@{/news}" class="btn btn-outline-primary btn-sm">查看全部 <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="row g-4">
+                <th:block th:if="${#lists.isEmpty(newsList)}">
+                    <div class="col-12">
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-newspaper" style="font-size: 3rem;"></i>
+                            <p class="mt-2">暂无新闻资讯，敬请期待</p>
+                        </div>
+                    </div>
+                </th:block>
+                <th:block th:unless="${#lists.isEmpty(newsList)}">
+                    <div class="col-md-6 col-lg-4" th:each="newsItem : ${newsList}" th:if="${newsItemStat.index < 3}">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <span class="badge bg-primary mb-2" th:text="${newsItem.category}">分类</span>
+                                <h5 class="card-title">
+                                    <a th:href="@{/news/{id}(id=${newsItem.id})}" class="text-decoration-none text-dark" th:text="${newsItem.title}">标题</a>
+                                </h5>
+                                <p class="card-text text-muted small" th:if="${newsItem.summary}" th:text="${#strings.abbreviate(newsItem.summary, 80)}">摘要</p>
+                                <p class="card-text text-muted small" th:unless="${newsItem.summary}">&nbsp;</p>
+                            </div>
+                            <div class="card-footer bg-white text-muted small">
+                                <span th:if="${newsItem.createTime}"><i class="bi bi-calendar"></i> <span th:text="${#temporals.format(newsItem.createTime, 'yyyy-MM-dd')}">日期</span></span>
+                                <span th:unless="${newsItem.createTime}" class="text-muted">—</span>
+                                <span class="ms-3"><i class="bi bi-eye"></i> <span th:text="${newsItem.viewCount}">浏览</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </section>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

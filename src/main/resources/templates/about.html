@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>关于我们 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#334155,#475569)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <section class="page-header page-header--about">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-2"><i class="bi bi-info-circle"></i> 关于智慧迎新系统</h2>
+            <p class="opacity-75">帮助新生快速熟悉学校，辅助新生更好融入大学生活</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">项目简介</h4>
+                        <p>智慧迎新系统是一套面向大学新生的综合性校园服务平台，旨在帮助新生在入学前和入学初期快速熟悉学校环境、了解报到流程、获取校园生活信息，从而更好地融入大学生活。</p>
+                        <p>本系统是东北石油大学计算机与信息技术学院软件工程系综合项目实训课程的团队项目成果，由四位软件工程专业学生协作完成。</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">技术栈</h4>
+                        <div class="row g-3">
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-filetype-java fs-1 text-danger"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Java 17</p>
+                                    <small class="text-muted">后端语言</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-gear fs-1 text-success"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Spring Boot 3</p>
+                                    <small class="text-muted">应用框架</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-shield-lock fs-1 text-primary"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Spring Security</p>
+                                    <small class="text-muted">安全框架</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-database fs-1 text-warning"></i>
+                                    <p class="mb-0 mt-2 fw-bold">MySQL</p>
+                                    <small class="text-muted">数据库</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-filetype-html fs-1 text-info"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Thymeleaf</p>
+                                    <small class="text-muted">模板引擎</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-bootstrap fs-1 text-purple"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Bootstrap 5</p>
+                                    <small class="text-muted">前端框架</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-git fs-1 text-dark"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Git</p>
+                                    <small class="text-muted">版本控制</small>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3 text-center">
+                                <div class="border rounded p-3">
+                                    <i class="bi bi-tools fs-1 text-secondary"></i>
+                                    <p class="mb-0 mt-2 fw-bold">Maven</p>
+                                    <small class="text-muted">构建工具</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">开发团队</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>成员</th>
+                                        <th>角色</th>
+                                        <th>负责模块</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>D</strong></td>
+                                        <td><span class="badge bg-danger">组长</span></td>
+                                        <td>系统架构、数据库设计、用户管理、后台管理、项目集成</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Z</strong></td>
+                                        <td><span class="badge bg-primary">组员</span></td>
+                                        <td>前端框架、校园导览、新闻公告、响应式设计</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>W</strong></td>
+                                        <td><span class="badge bg-success">组员</span></td>
+                                        <td>迎新指南、报到流程、FAQ、专业介绍、教师名录</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>S</strong></td>
+                                        <td><span class="badge bg-info">组员</span></td>
+                                        <td>校园生活、社团活动、交流社区、论坛系统</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold mb-3">联系方式</h4>
+                        <p><i class="bi bi-geo-alt-fill text-primary"></i> 黑龙江省大庆市龙凤区</p>
+                        <p><i class="bi bi-building text-primary"></i> 东北石油大学 计算机与信息技术学院</p>
+                        <p><i class="bi bi-envelope-fill text-primary"></i> freshman@nepu.edu.cn</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

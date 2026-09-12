@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>宿舍信息 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#059669,#34D399)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--dormitory">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-house-heart"></i> 宿舍信息</h2>
+            <p class="mb-0 opacity-75">了解宿舍环境，提前熟悉你的"小家"</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(dormitories)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-house" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无宿舍信息</h4>
+                <p>宿舍信息正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 宿舍卡片 -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(dormitories)}">
+            <div class="col-md-6" th:each="dorm : ${dormitories}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title fw-bold mb-0" th:text="${dorm.name}">宿舍名称</h5>
+                            <span class="badge bg-success" th:text="${dorm.type}">类型</span>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <small class="text-muted">房型</small>
+                                    <p class="mb-0 fw-bold small" th:text="${dorm.roomType}">四人间</p>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded p-2 text-center">
+                                    <small class="text-muted">住宿费</small>
+                                    <p class="mb-0 fw-bold small" th:text="${dorm.fee}">费用</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-3" th:text="${dorm.description}">宿舍描述</p>
+                        <div th:if="${dorm.facilities}">
+                            <small class="fw-bold text-primary"><i class="bi bi-gear"></i> 设施：</small>
+                            <small class="text-muted" th:text="${dorm.facilities}">设施列表</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

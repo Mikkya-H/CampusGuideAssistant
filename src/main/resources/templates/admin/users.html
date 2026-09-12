@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>用户管理 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-0"><i class="bi bi-people-fill"></i> 用户管理</h3>
+                <a th:href="@{/admin}" class="text-muted small text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> 返回后台
+                </a>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>姓名</th>
+                            <th>邮箱</th>
+                            <th>学号</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td th:text="${user.id}">1</td>
+                            <td th:text="${user.username}">用户名</td>
+                            <td th:text="${user.realName}">姓名</td>
+                            <td>
+                                <small th:text="${user.email}">email@example.com</small>
+                            </td>
+                            <td th:text="${user.studentNo != null ? user.studentNo : '-'}">学号</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${user.roleName == '管理员'} ? 'bg-danger' : 'bg-primary'"
+                                      th:text="${user.roleName != null ? user.roleName : '学生'}">角色</span>
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${user.status == 1} ? 'bg-success' : 'bg-secondary'"
+                                      th:text="${user.status == 1} ? '正常' : '禁用'">状态</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/users/toggle/{id}(id=${user.id})}"
+                                   class="btn btn-sm" th:classappend="${user.status == 1} ? 'btn-outline-warning' : 'btn-outline-success'"
+                                   th:attr="onclick=${user.status == 1} ? 'return confirm(\'确定要禁用用户「'+${user.realName}+'」吗？\')' : 'return confirm(\'确定要启用用户「'+${user.realName}+'」吗？\')'"
+                                   th:text="${user.status == 1} ? '禁用' : '启用'">
+                                    操作
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="8" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">暂无用户数据</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

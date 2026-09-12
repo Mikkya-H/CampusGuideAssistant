@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>社团风采 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#6D28D9,#7C3AED)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--clubs">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-people-fill"></i> 社团风采</h2>
+            <p class="mb-0 opacity-75">丰富多彩的社团活动，找到志同道合的伙伴</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 分类筛选 -->
+        <div class="d-flex flex-wrap gap-2 mb-4 justify-content-center">
+            <a th:href="@{/life/clubs}" class="btn btn-outline-primary btn-sm" th:classappend="${param.category == null} ? 'active'">全部</a>
+            <a th:href="@{/life/clubs(category=学术科技)}" class="btn btn-outline-primary btn-sm">学术科技</a>
+            <a th:href="@{/life/clubs(category=文化艺术)}" class="btn btn-outline-primary btn-sm">文化艺术</a>
+            <a th:href="@{/life/clubs(category=体育竞技)}" class="btn btn-outline-primary btn-sm">体育竞技</a>
+            <a th:href="@{/life/clubs(category=志愿服务)}" class="btn btn-outline-primary btn-sm">志愿服务</a>
+            <a th:href="@{/life/clubs(category=创新创业)}" class="btn btn-outline-primary btn-sm">创新创业</a>
+            <a th:href="@{/life/clubs(category=兴趣爱好)}" class="btn btn-outline-primary btn-sm">兴趣爱好</a>
+        </div>
+
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(clubs)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-flag" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无社团信息</h4>
+                <p>社团信息正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 社团卡片 -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(clubs)}">
+            <div class="col-md-6 col-lg-4" th:each="club : ${clubs}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title fw-bold mb-0" th:text="${club.name}">社团名称</h5>
+                            <span class="badge bg-info" th:text="${club.category}">分类</span>
+                        </div>
+                        <p class="text-muted small mb-3" th:if="${club.description != null}" th:text="${club.description}">描述</p>
+                        <p class="text-muted small mb-3" th:unless="${club.description != null}">暂无介绍</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <small class="text-muted" th:if="${club.president}">
+                                <i class="bi bi-person-badge"></i> 社长：<span th:text="${club.president}">社长</span>
+                            </small>
+                        </div>
+                        <div th:if="${club.recruitInfo}" class="mt-2">
+                            <span class="badge bg-warning text-dark">
+                                <i class="bi bi-megaphone"></i> 招新：<span th:text="${club.recruitInfo}">招新信息</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

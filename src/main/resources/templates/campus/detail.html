@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title th:text="${building.name} + ' - 校园导览'">建筑详情</title>
+    <style>#mainNav{background:linear-gradient(135deg,#059669,#10B981)!important;}</style>
+    <link rel="stylesheet" th:href="@{/css/leaflet.min.css}" />
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+    <div class="container py-5">
+        <a th:href="@{/campus}" class="btn btn-outline-secondary btn-sm mb-4"><i class="bi bi-arrow-left"></i> 返回</a>
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100" th:if="${building.imageUrl}">
+                    <div class="card-body text-center bg-light rounded d-flex align-items-center p-0 overflow-hidden" style="min-height:350px;">
+                        <img th:src="${building.imageUrl}" th:alt="${building.name}" class="img-fluid w-100"
+                             style="max-height:450px;object-fit:cover;"
+                             onerror="this.style.display='none';">
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm h-100" th:unless="${building.imageUrl}">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-center text-muted" style="min-height:350px;">
+                        <i class="bi bi-image" style="font-size:5rem;"></i>
+                        <p class="mt-2">暂无建筑图片</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <span class="badge bg-primary mb-2" th:text="${building.category}">分类</span>
+                        <h2 class="fw-bold" th:text="${building.name}">名称</h2>
+                        <hr>
+                        <h5 class="text-primary"><i class="bi bi-info-circle"></i> 简介</h5>
+                        <p th:text="${building.description}">描述</p>
+                        <div class="row g-3 mt-2">
+                            <div class="col-sm-6" th:if="${building.address}"><div class="d-flex"><i class="bi bi-geo-alt-fill text-danger me-2 mt-1"></i><div><small class="text-muted">地址</small><p class="mb-0" th:text="${building.address}">地址</p></div></div></div>
+                            <div class="col-sm-6" th:if="${building.openingHours}"><div class="d-flex"><i class="bi bi-clock-fill text-success me-2 mt-1"></i><div><small class="text-muted">开放时间</small><p class="mb-0" th:text="${building.openingHours}">时间</p></div></div></div>
+                            <div class="col-sm-6" th:if="${building.floors}"><div class="d-flex"><i class="bi bi-building text-info me-2 mt-1"></i><div><small class="text-muted">楼层</small><p class="mb-0" th:text="${building.floors}">楼层数</p></div></div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm mt-3" th:if="${building.tags}">
+                    <div class="card-body">
+                        <h5 class="text-primary"><i class="bi bi-tags"></i> 设施标签</h5>
+                        <p class="mb-0" th:text="${building.tags}">标签</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 地图卡片 -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-compass"></i> 校园地图</h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="navMap" style="height:420px;z-index:0;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/leaflet.min.js}"></script>
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+        var lat = /*[[${building.latitude}]]*/ null;
+        var lng = /*[[${building.longitude}]]*/ null;
+        var name = /*[[${building.name}]]*/ '';
+        var mapDiv = document.getElementById('navMap');
+        if (!lat || !lng) {
+            if (mapDiv) mapDiv.innerHTML = '<div class="d-flex align-items-center justify-content-center h-100 text-muted"><div class="text-center"><i class="bi bi-geo-alt" style="font-size:3rem;"></i><p class="mt-2">该建筑暂无坐标信息</p></div></div>';
+            return;
+        }
+
+        /* 坐标转换：BD-09（百度）→ GCJ-02（高德/Leaflet）
+         * 东北石油大学 GCJ-02 范围：125.14-125.17, 46.58-46.61
+         * 如果数据库已存 GCJ-02，直接使用；否则从 BD-09 转换 */
+        function bd09toGcj02(lat, lng) {
+            var x = lng - 0.0065, y = lat - 0.006;
+            var z = Math.sqrt(x*x + y*y) - 0.00002 * Math.sin(y * Math.PI * 3000.0 / 180.0);
+            var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * Math.PI * 3000.0 / 180.0);
+            return {lat: z * Math.sin(theta), lng: z * Math.cos(theta)};
+        }
+        var isGcj02 = (lng >= 125.14 && lng <= 125.17 && lat >= 46.58 && lat <= 46.61);
+        var gcj = isGcj02 ? {lat: lat, lng: lng} : bd09toGcj02(lat, lng);
+
+        var map = L.map('navMap').setView([gcj.lat, gcj.lng], 17);
+
+        // 主瓦片：高德地图（子域名轮转）
+        var amapTiles = L.tileLayer(
+            'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+                subdomains: ['1','2','3','4'],
+                maxZoom: 20,
+                attribution: '&copy; 高德地图'
+            });
+
+        // 备用瓦片：OpenStreetMap（全球免费，无需 key）
+        var osmTiles = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+            });
+
+        // 先用高德，失败自动切 OSM
+        amapTiles.addTo(map);
+        var amapFailed = false;
+        amapTiles.on('tileerror', function() {
+            if (amapFailed) return;
+            if (!amapTiles._failCount) amapTiles._failCount = 0;
+            amapTiles._failCount++;
+            if (amapTiles._failCount >= 3) {
+                amapFailed = true;
+                console.warn('[地图] 高德瓦片加载失败，切换到 OpenStreetMap');
+                map.removeLayer(amapTiles);
+                osmTiles.addTo(map);
+            }
+        });
+
+        // 标记点
+        var markerIcon = L.icon({
+            iconUrl: '/images/marker-icon.png',
+            shadowUrl: '/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34]
+        });
+        L.marker([gcj.lat, gcj.lng], {icon: markerIcon})
+            .addTo(map)
+            .bindTooltip(name, {direction:'top', offset:[0,-10]})
+            .openTooltip();
+    });
+    </script>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

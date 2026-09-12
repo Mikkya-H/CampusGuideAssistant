@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>报到流程 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#EA580C,#F97316)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--guide">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-clipboard-check"></i> 报到流程</h2>
+            <p class="mb-0 opacity-75">跟随步骤，轻松完成入学报到</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm mb-4">
+            <i class="bi bi-arrow-left"></i> 返回首页
+        </a>
+
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(steps)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-clipboard" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无报到流程</h4>
+                <p>报到流程信息正在准备中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 时间线步骤 -->
+        <div class="timeline" th:unless="${#lists.isEmpty(steps)}">
+            <div class="row g-4" th:each="step : ${steps}">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="row align-items-start">
+                                <div class="col-auto">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold"
+                                         style="width: 50px; height: 50px; font-size: 1.3rem;"
+                                         th:text="${step.stepNo}">1</div>
+                                </div>
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+                                        <h5 class="mb-1" th:text="${step.title}">步骤标题</h5>
+                                        <span class="badge bg-info" th:if="${step.location}" th:text="${step.location}">地点</span>
+                                    </div>
+                                    <p class="text-muted mt-2 mb-2" th:text="${step.description}">步骤详细描述</p>
+                                    <div th:if="${step.requiredMaterials}">
+                                        <small class="text-warning fw-bold">
+                                            <i class="bi bi-exclamation-circle"></i> 所需材料：
+                                        </small>
+                                        <small class="text-muted" th:text="${step.requiredMaterials}">材料清单</small>
+                                    </div>
+                                    <div th:if="${step.tips}" class="mt-1">
+                                        <small class="text-success fw-bold">
+                                            <i class="bi bi-lightbulb"></i> 小贴士：
+                                        </small>
+                                        <small class="text-muted" th:text="${step.tips}">提示信息</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

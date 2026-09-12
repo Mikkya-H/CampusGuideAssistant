@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>FAQ管理 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-0"><i class="bi bi-question-circle"></i> FAQ管理</h3>
+                <a th:href="@{/admin}" class="text-muted small text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> 返回后台
+                </a>
+            </div>
+            <a th:href="@{/admin/faqs/edit}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> 新增FAQ
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 5%;">ID</th>
+                            <th style="width: 30%;">问题</th>
+                            <th style="width: 12%;">分类</th>
+                            <th style="width: 30%;">答案</th>
+                            <th style="width: 8%;">状态</th>
+                            <th style="width: 15%;" class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="faq : ${faqs}"
+                            th:classappend="${faq.status == 0} ? 'table-warning'">
+                            <td th:text="${faq.id}">1</td>
+                            <td>
+                                <strong th:text="${faq.question}">问题内容</strong>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary" th:text="${faq.category}">分类</span>
+                            </td>
+                            <td>
+                                <small th:if="${faq.answer != null and !faq.answer.isEmpty()}"
+                                       th:text="${#strings.length(faq.answer) > 50 ? #strings.substring(faq.answer, 0, 50) + '...' : faq.answer}"
+                                       class="text-muted">答案</small>
+                                <span th:unless="${faq.answer != null and !faq.answer.isEmpty()}"
+                                      class="text-danger fw-bold">
+                                    <i class="bi bi-exclamation-circle"></i> 待回复
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${faq.status == 1}" class="badge bg-success">已发布</span>
+                                <span th:unless="${faq.status == 1}" class="badge bg-warning text-dark">待回复</span>
+                            </td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/faqs/edit(id=${faq.id})}"
+                                   class="btn btn-outline-primary btn-sm me-1">
+                                    <i class="bi bi-pencil"></i> 编辑
+                                </a>
+                                <form th:action="@{/admin/faqs/delete/{id}(id=${faq.id})}" method="post"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('确定要删除这条FAQ吗？');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(faqs)}">
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">暂无FAQ数据</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

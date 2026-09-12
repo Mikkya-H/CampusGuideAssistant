@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>专业介绍 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#7C3AED,#8B5CF6)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--majors">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-mortarboard"></i> 专业介绍</h2>
+            <p class="mb-0 opacity-75">了解各个专业详情，选择适合你的方向</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(majors)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-journal-bookmark" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无专业信息</h4>
+                <p>专业介绍信息正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 专业卡片 -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(majors)}">
+            <div class="col-md-6 col-lg-4" th:each="major : ${majors}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title fw-bold mb-0" th:text="${major.name}">专业名称</h5>
+                            <span class="badge bg-success" th:text="${major.degree}">学位</span>
+                        </div>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-building"></i> <span th:text="${major.college}">所属学院</span>
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-clock"></i> 学制：<span th:text="${major.duration}">4年</span>
+                        </p>
+                        <p class="card-text text-muted small" th:if="${major.description != null}" th:text="${major.description}">专业描述信息</p>
+                        <p class="card-text text-muted small" th:unless="${major.description != null}">暂无描述</p>
+                        <button class="btn btn-sm btn-outline-primary mt-2" type="button"
+                                data-bs-toggle="collapse" th:data-bs-target="'#majorDetail-' + ${major.id}"
+                                aria-expanded="false">
+                            查看详情 <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <div class="collapse mt-3" th:id="'majorDetail-' + ${major.id}">
+                            <hr>
+                            <p class="small" th:text="${major.description}">完整描述</p>
+                            <div th:if="${major.courses}">
+                                <small class="fw-bold text-primary">主要课程：</small>
+                                <small class="text-muted" th:text="${major.courses}">课程列表</small>
+                            </div>
+                            <div th:if="${major.careerProspect != null}" class="mt-2">
+                                <small class="fw-bold text-primary">就业方向：</small>
+                                <small class="text-muted" th:text="${major.careerProspect}">就业方向</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

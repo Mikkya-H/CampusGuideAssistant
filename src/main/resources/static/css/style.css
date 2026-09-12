@@ -1,0 +1,681 @@
+/* ========================================
+   智慧迎新系统 - 东北石油大学主题样式
+   Smart Freshman Orientation System
+   品牌色：东油蓝绿（崇尚科技、尊重自然）
+   ======================================== */
+
+/* ========== CSS 变量 & Bootstrap 覆盖 ========== */
+:root {
+  /* 主色 — 东油蓝绿 */
+  --nepu-primary: #0D7377;
+  --nepu-primary-dark: #095557;
+  --nepu-primary-light: #14A3A8;
+  --nepu-primary-rgb: 13, 115, 119;
+
+  /* 点缀色 — 石油金 */
+  --nepu-gold: #C8922B;
+  --nepu-gold-light: #F5E6C8;
+
+  /* 背景 & 表面 */
+  --nepu-bg: #F0F4F5;
+  --nepu-surface: #FFFFFF;
+
+  /* 文字 */
+  --nepu-text: #1A2B2F;
+  --nepu-text-secondary: #5F6B6F;
+
+  /* 渐变预设 */
+  --gradient-primary: linear-gradient(135deg, #0D7377 0%, #095557 100%);
+  --gradient-hero: linear-gradient(135deg, #0D7377 0%, #095557 50%, #063638 100%);
+  --gradient-card-header: linear-gradient(135deg, #0D7377 0%, #0A5F63 100%);
+
+  /* 阴影层级 */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.14);
+  --shadow-btn: 0 2px 8px rgba(13, 115, 119, 0.30);
+
+  /* 圆角 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* 覆盖 Bootstrap 主色 —— 使 bg-primary / btn-primary / text-primary 自动用东油色 */
+[data-bs-theme],
+:root {
+  --bs-primary: #0D7377;
+  --bs-primary-rgb: 13, 115, 119;
+  --bs-link-color: #0D7377;
+  --bs-link-hover-color: #095557;
+}
+
+/* ========== 基础设置 ========== */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+  background-color: var(--nepu-bg);
+  color: var(--nepu-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  flex: 1;
+}
+
+/* ========== 导航栏 ========== */
+.navbar {
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar-brand {
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+/* ========== 统一页面头部 ========== */
+.page-header {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 2.5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 背景装饰纹理 */
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3Ccircle cx='10' cy='10' r='2'/%3E%3Ccircle cx='50' cy='15' r='2'/%3E%3Ccircle cx='15' cy='45' r='2.5'/%3E%3Ccircle cx='45' cy='48' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* 底部金色装饰线 — 石油意象 */
+.page-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--nepu-gold), var(--nepu-primary-light), var(--nepu-gold), transparent);
+  opacity: 0.7;
+}
+
+.page-header .container {
+  position: relative;
+  z-index: 1;
+}
+
+.page-header h2 {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.page-header p {
+  opacity: 0.85;
+}
+
+/* ===== 页面头部配色变体 — 青春活力版 ===== */
+.page-header--campus::before    { background: linear-gradient(135deg, #059669 0%, #10B981 100%); }  /* 清新翠绿 · 探索 */
+.page-header--guide::before     { background: linear-gradient(135deg, #EA580C 0%, #F97316 100%); }  /* 活力暖橙 · 行动 */
+.page-header--faq::before       { background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); }  /* 明快天蓝 · 答疑 */
+.page-header--majors::before    { background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%); }  /* 知性紫罗兰 · 学术 */
+.page-header--teachers::before  { background: linear-gradient(135deg, #0891B2 0%, #06B6D4 100%); }  /* 清澈青蓝 · 师道 */
+.page-header--life::before      { background: linear-gradient(135deg, #DB2777 0%, #EC4899 100%); }  /* 青春粉红 · 生活 */
+.page-header--dormitory::before { background: linear-gradient(135deg, #059669 0%, #34D399 100%); }  /* 自然翠绿 · 安居 */
+.page-header--cafeteria::before { background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); }  /* 阳光暖金 · 美食 */
+.page-header--clubs::before     { background: linear-gradient(135deg, #6D28D9 0%, #7C3AED 100%); }  /* 梦幻紫 · 社团 */
+.page-header--activities::before{ background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }  /* 热情珊瑚红 · 活动 */
+.page-header--forum::before     { background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%); }  /* 深邃靛蓝 · 交流 */
+.page-header--news::before      { background: linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%); }  /* 清爽湖蓝 · 资讯 */
+.page-header--about::before     { background: linear-gradient(135deg, #334155 0%, #475569 100%); }  /* 雅致灰蓝 · 关于 */
+
+/* ========== 首页英雄区 ========== */
+.hero-section {
+  background: var(--gradient-hero);
+  color: white;
+  padding: 80px 0 70px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.hero-section p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 650px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 1.25rem;
+  letter-spacing: 1px;
+}
+
+.hero-badge i {
+  color: var(--nepu-gold);
+}
+
+/* hero CTA 按钮 */
+.hero-section .btn-light {
+  color: var(--nepu-primary-dark);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all 0.3s;
+}
+
+.hero-section .btn-light:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hero-section .btn-outline-light {
+  border-radius: var(--radius-md);
+  transition: all 0.3s;
+}
+
+.hero-section .btn-outline-light:hover {
+  transform: translateY(-2px);
+}
+
+/* ========== 功能卡片 ========== */
+.feature-card {
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.2);
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  height: 100%;
+  background: var(--nepu-surface);
+}
+
+.feature-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature-card .card-body {
+  padding: 2rem 1.5rem;
+  text-align: center;
+}
+
+.feature-icon {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.feature-card .icon-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  font-size: 2.2rem;
+  transition: all 0.3s;
+}
+
+.feature-card:hover .icon-circle {
+  border-radius: 50%;
+  transform: scale(1.05);
+}
+
+.feature-card .card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--nepu-text);
+}
+
+.feature-card .card-text {
+  color: var(--nepu-text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ========== 信息卡片（列表/详情页） ========== */
+.info-card {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.info-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.info-card .card-header {
+  background: var(--gradient-card-header);
+  color: white;
+  border-radius: var(--radius-md) var(--radius-md) 0 0 !important;
+  font-weight: 600;
+}
+
+/* ========== 时间线（报到流程） ========== */
+.timeline {
+  position: relative;
+  padding: 20px 0;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 60px;
+  margin-bottom: 30px;
+  min-height: 80px;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 10px;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(13, 115, 119, 0.4);
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 27px;
+  top: 36px;
+  bottom: -30px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--nepu-primary), #c8d6d7);
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-content {
+  background: var(--nepu-surface);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ========== 分类标签 ========== */
+.category-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* ========== FAQ 手风琴 ========== */
+.accordion-button:not(.collapsed) {
+  background-color: rgba(13, 115, 119, 0.08);
+  color: var(--nepu-primary);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 115, 119, 0.15);
+  border-color: var(--nepu-primary);
+}
+
+/* ========== 登录/注册卡片 ========== */
+.auth-card {
+  max-width: 480px;
+  margin: 3rem auto;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.auth-card .card-header {
+  background: var(--gradient-primary);
+  color: white;
+  text-align: center;
+  padding: 1.75rem 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.auth-card .card-body {
+  padding: 2rem;
+}
+
+/* ========== 统计卡片 ========== */
+.stat-card {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  color: white;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.stat-card:hover {
+  transform: scale(1.03);
+}
+
+.stat-card .stat-number {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.stat-card .stat-label {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+/* ========== 表格 ========== */
+.table-card {
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.table-card .table {
+  margin-bottom: 0;
+}
+
+.table-card thead {
+  background: #f4f6f7;
+}
+
+.table-card th {
+  font-weight: 600;
+  color: #555;
+  border-bottom-width: 2px;
+}
+
+/* ========== 按钮 ========== */
+.btn {
+  border-radius: var(--radius-sm);
+  transition: all 0.25s ease;
+  font-weight: 500;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0A5F63, #074547);
+  box-shadow: 0 4px 16px rgba(13, 115, 119, 0.4);
+}
+
+.btn-outline-primary {
+  color: var(--nepu-primary);
+  border-color: var(--nepu-primary);
+}
+
+.btn-outline-primary:hover {
+  background: var(--nepu-primary);
+  border-color: var(--nepu-primary);
+  color: white;
+}
+
+.btn-lg {
+  border-radius: var(--radius-md);
+}
+
+/* ========== 搜索框 ========== */
+.search-box {
+  border-radius: 25px;
+  padding: 10px 20px;
+  border: 2px solid #d0d5d6;
+  transition: all 0.3s;
+  font-size: 1rem;
+  background: var(--nepu-surface);
+}
+
+.search-box:focus {
+  border-color: var(--nepu-primary);
+  box-shadow: 0 0 0 0.2rem rgba(13, 115, 119, 0.10);
+  outline: none;
+}
+
+/* ========== 页脚 ========== */
+footer {
+  margin-top: auto;
+  background: #1B2A2F;
+}
+
+footer a:hover {
+  color: var(--nepu-primary-light) !important;
+}
+
+/* ========== 页面标题区 ========== */
+.page-title-section {
+  padding: 2rem 0;
+  text-align: center;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 2rem;
+}
+
+.page-title-section h2 {
+  font-weight: 700;
+  color: var(--nepu-text);
+}
+
+.page-title-section p {
+  color: var(--nepu-text-secondary);
+}
+
+/* ========== 论坛帖子 ========== */
+.post-item {
+  display: block;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eceff0;
+  transition: background 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-item:hover {
+  background: rgba(13, 115, 119, 0.03);
+}
+
+.post-title {
+  font-weight: 600;
+  color: var(--nepu-text);
+  margin-bottom: 0.25rem;
+}
+
+.post-meta {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+/* ========== 评论 ========== */
+.comment-item {
+  padding: 1rem;
+  border-bottom: 1px solid #eceff0;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+/* ========== 置顶标签 ========== */
+.top-badge {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ========== 空状态 ========== */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: #999;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.35;
+}
+
+/* ========== 卡片通用增强 ========== */
+.card {
+  border-radius: var(--radius-lg);
+}
+
+.hover-shadow {
+  transition: all 0.3s ease;
+}
+
+.hover-shadow:hover {
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-4px);
+}
+
+/* ========== 面包屑 ========== */
+.breadcrumb-nav {
+  background: linear-gradient(135deg, #f6f8f9, #e8eded);
+  padding: 1rem 0;
+  margin-bottom: 2rem;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 50px 0 40px;
+  }
+  .hero-section h1 {
+    font-size: 1.8rem;
+  }
+  .hero-section p {
+    font-size: 1rem;
+  }
+  .timeline-item {
+    padding-left: 50px;
+  }
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  .page-header {
+    padding: 1.75rem 0;
+  }
+}
+
+/* ========== 入场动画（仅首页） ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in {
+  animation: fadeInUp 0.6s ease both;
+}
+
+.animate-in:nth-child(1) { animation-delay: 0.1s; }
+.animate-in:nth-child(2) { animation-delay: 0.2s; }
+.animate-in:nth-child(3) { animation-delay: 0.3s; }
+.animate-in:nth-child(4) { animation-delay: 0.4s; }
+
+/* ========== 石油精神标语区 ========== */
+.spirit-section {
+  background: linear-gradient(135deg, #1B2A2F 0%, #152226 100%);
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.spirit-section .spirit-quote {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--nepu-gold-light);
+  margin-bottom: 0.5rem;
+}
+
+.spirit-section .spirit-sub {
+  font-size: 0.95rem;
+  opacity: 0.6;
+  letter-spacing: 1px;
+}
+
+/* ========== 联系卡片（关于页面） ========== */
+.contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  transition: background 0.2s;
+}
+
+.contact-item:hover {
+  background: rgba(13, 115, 119, 0.04);
+}
+
+.contact-item .contact-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(13, 115, 119, 0.1);
+  color: var(--nepu-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}

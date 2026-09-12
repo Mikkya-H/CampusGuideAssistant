@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title th:text="${faq.id != null} ? '编辑FAQ' : '新增FAQ'">FAQ编辑</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <a th:href="@{/admin/faqs}" class="btn btn-outline-secondary btn-sm mb-4">
+                    <i class="bi bi-arrow-left"></i> 返回FAQ管理
+                </a>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold" th:text="${faq.id != null} ? '编辑FAQ' : '新增FAQ'">FAQ编辑</h4>
+                        <span th:if="${faq.status == 0}" class="badge bg-warning text-dark">
+                            <i class="bi bi-exclamation-circle"></i> 待回复 - 学生提问
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/faqs/save}" method="post">
+                            <input type="hidden" name="id" th:value="${faq.id}" th:if="${faq.id != null}">
+
+                            <div class="mb-3">
+                                <label class="form-label">问题内容 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="question" rows="3"
+                                          placeholder="请输入问题内容" required th:text="${faq.question}"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">答案内容</label>
+                                <textarea class="form-control" name="answer" rows="6"
+                                          placeholder="请输入答案（回复学生问题时必填）" th:text="${faq.answer}"></textarea>
+                                <div class="form-text">
+                                    <i class="bi bi-info-circle"></i>
+                                    学生提交的问题答案为空，填写答案后将自动变为"已发布"状态公开显示
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">分类 <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="category" required>
+                                        <option value="">请选择</option>
+                                        <option value="报到" th:selected="${faq.category == '报到'}">报到</option>
+                                        <option value="住宿" th:selected="${faq.category == '住宿'}">住宿</option>
+                                        <option value="学习" th:selected="${faq.category == '学习'}">学习</option>
+                                        <option value="生活" th:selected="${faq.category == '生活'}">生活</option>
+                                        <option value="交通" th:selected="${faq.category == '交通'}">交通</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">状态</label>
+                                    <select class="form-select" name="status">
+                                        <option value="1" th:selected="${faq.status == 1}">已发布</option>
+                                        <option value="0" th:selected="${faq.status == 0}">待回复</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">排序</label>
+                                    <input type="number" class="form-control" name="sort"
+                                           th:value="${faq.sort != null ? faq.sort : 0}"
+                                           placeholder="数字越小越靠前">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i>
+                                    <span th:text="${faq.id != null} ? '更新' : '添加'">操作</span>
+                                </button>
+                                <a th:href="@{/admin/faqs}" class="btn btn-outline-secondary">取消</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

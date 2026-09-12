@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>新闻管理 - 智慧迎新系统</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="fw-bold mb-0"><i class="bi bi-newspaper"></i> 新闻管理</h3>
+                <a th:href="@{/admin}" class="text-muted small text-decoration-none">
+                    <i class="bi bi-arrow-left"></i> 返回后台
+                </a>
+            </div>
+            <a th:href="@{/admin/news/edit}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> 发布新闻
+            </a>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>标题</th>
+                            <th>分类</th>
+                            <th>作者</th>
+                            <th>发布时间</th>
+                            <th>浏览</th>
+                            <th class="text-center">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="newsItem : ${newsList}">
+                            <td th:text="${newsItem.id}">1</td>
+                            <td>
+                                <a th:href="@{/news/{id}(id=${newsItem.id})}" class="text-decoration-none"
+                                   th:text="${newsItem.title}">标题</a>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary" th:text="${newsItem.category}">分类</span>
+                            </td>
+                            <td th:text="${newsItem.author}">作者</td>
+                            <td>
+                                <small th:if="${newsItem.createTime}" th:text="${#temporals.format(newsItem.createTime, 'yyyy-MM-dd')}">日期</small>
+                                <small th:unless="${newsItem.createTime}">—</small>
+                            </td>
+                            <td th:text="${newsItem.viewCount}">0</td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/news/edit(id=${newsItem.id})}"
+                                   class="btn btn-outline-primary btn-sm me-1">
+                                    <i class="bi bi-pencil"></i> 编辑
+                                </a>
+                                <form th:action="@{/admin/news/delete/{id}(id=${newsItem.id})}" method="post"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('确定要删除这条新闻吗？');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i> 删除
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(newsList)}">
+                            <td colspan="7" class="text-center text-muted py-4">
+                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                <p class="mt-2 mb-0">暂无新闻，点击右上角按钮发布</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

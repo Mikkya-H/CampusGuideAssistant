@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>教师名录 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#0891B2,#06B6D4)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--teachers">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-person-workspace"></i> 教师名录</h2>
+            <p class="mb-0 opacity-75">认识各位老师，了解研究方向</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(teachers)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-people" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无教师信息</h4>
+                <p>教师名录信息正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 教师卡片网格 -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(teachers)}">
+            <div class="col-md-6 col-lg-4" th:each="teacher : ${teachers}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center me-3 flex-shrink-0"
+                                 style="width: 60px; height: 60px;">
+                                <i class="bi bi-person-fill text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-1" th:text="${teacher.name}">教师姓名</h5>
+                                <span class="badge bg-info" th:text="${teacher.title}">职称</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted"><i class="bi bi-building"></i> </small>
+                            <small th:text="${teacher.college}">所属学院</small>
+                        </div>
+                        <div class="mb-2" th:if="${teacher.researchDirection}">
+                            <small class="text-muted"><i class="bi bi-search"></i> 研究方向：</small>
+                            <small th:text="${teacher.researchDirection}">研究方向</small>
+                        </div>
+                        <div th:if="${teacher.email}">
+                            <small class="text-muted"><i class="bi bi-envelope"></i> </small>
+                            <small>
+                                <a th:href="'mailto:' + ${teacher.email}" class="text-decoration-none" th:text="${teacher.email}">邮箱</a>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

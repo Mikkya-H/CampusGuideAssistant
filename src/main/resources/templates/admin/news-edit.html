@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title th:text="${news.id != null} ? '编辑新闻' : '发布新闻'">新闻编辑</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <a th:href="@{/admin/news}" class="btn btn-outline-secondary btn-sm mb-4">
+                    <i class="bi bi-arrow-left"></i> 返回新闻管理
+                </a>
+
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0 fw-bold" th:text="${news.id != null} ? '编辑新闻' : '发布新闻'">新闻编辑</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/news/save}" method="post">
+                            <input type="hidden" name="id" th:value="${news.id}" th:if="${news.id != null}">
+
+                            <div class="mb-3">
+                                <label class="form-label">标题 <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="title"
+                                       th:value="${news.title}" placeholder="请输入新闻标题" required>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">分类 <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="category" required>
+                                        <option value="">请选择分类</option>
+                                        <option value="通知公告" th:selected="${news.category == '通知公告'}">通知公告</option>
+                                        <option value="校园新闻" th:selected="${news.category == '校园新闻'}">校园新闻</option>
+                                        <option value="学术动态" th:selected="${news.category == '学术动态'}">学术动态</option>
+                                        <option value="学生活动" th:selected="${news.category == '学生活动'}">学生活动</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">作者</label>
+                                    <input type="text" class="form-control" name="author"
+                                           th:value="${news.author}" placeholder="请输入作者">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">摘要</label>
+                                <textarea class="form-control" name="summary" rows="2"
+                                          placeholder="请输入新闻摘要" th:text="${news.summary}"></textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label">正文内容 <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="content" rows="12"
+                                          placeholder="请输入新闻正文内容..." required th:text="${news.content}"></textarea>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i>
+                                    <span th:text="${news.id != null} ? '更新' : '发布'">操作</span>
+                                </button>
+                                <a th:href="@{/admin/news}" class="btn btn-outline-secondary">取消</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

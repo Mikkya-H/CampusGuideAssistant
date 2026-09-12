@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title th:text="${dormitory.id != null} ? '编辑宿舍' : '新增宿舍'">宿舍编辑</title>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <section class="bg-dark text-white py-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-gear"></i> 后台管理 / 宿舍管理 / <span th:text="${dormitory.id != null} ? '编辑' : '新增'">编辑</span></h5>
+                <a th:href="@{/admin/dormitories}" class="btn btn-sm btn-outline-light"><i class="bi bi-arrow-left"></i> 返回宿舍列表</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h4 class="mb-0 fw-bold" th:text="${dormitory.id != null} ? '编辑宿舍' : '新增宿舍'">编辑宿舍</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/admin/dormitories/save}" method="post">
+                            <input type="hidden" name="id" th:value="${dormitory.id}" th:if="${dormitory.id != null}">
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">宿舍名称 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="name" required
+                                           th:value="${dormitory.name}" placeholder="如：博文学区">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">楼号 <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="buildingNo" required
+                                           th:value="${dormitory.buildingNo}" placeholder="如：B1-B8">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">费用（元/年）</label>
+                                    <input type="number" step="0.01" class="form-control" name="fee"
+                                           th:value="${dormitory.fee}" placeholder="如：800.00">
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">类型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="type" required>
+                                        <option value="">请选择</option>
+                                        <option value="男生宿舍" th:selected="${dormitory.type == '男生宿舍'}">男生宿舍</option>
+                                        <option value="女生宿舍" th:selected="${dormitory.type == '女生宿舍'}">女生宿舍</option>
+                                        <option value="男女生分区" th:selected="${dormitory.type == '男女生分区'}">男女生分区</option>
+                                        <option value="研究生宿舍" th:selected="${dormitory.type == '研究生宿舍'}">研究生宿舍</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">房型 <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="roomType" required>
+                                        <option value="">请选择</option>
+                                        <option value="四人间" th:selected="${dormitory.roomType == '四人间'}">四人间</option>
+                                        <option value="六人间" th:selected="${dormitory.roomType == '六人间'}">六人间</option>
+                                        <option value="六人间/八人间" th:selected="${dormitory.roomType == '六人间/八人间'}">六人间/八人间</option>
+                                        <option value="八人间" th:selected="${dormitory.roomType == '八人间'}">八人间</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">配套设施</label>
+                                <input type="text" class="form-control" name="facilities"
+                                       th:value="${dormitory.facilities}"
+                                       placeholder="如：空调、独立卫生间、热水器、公共洗衣机、无线网络">
+                                <div class="form-text">多个设施用逗号分隔</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">图片URL</label>
+                                <input type="text" class="form-control" name="imageUrl"
+                                       th:value="${dormitory.imageUrl}" placeholder="/images/xxx.jpg 或 https://...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">描述</label>
+                                <textarea class="form-control" name="description" rows="4"
+                                          placeholder="宿舍详细介绍" th:text="${dormitory.description}"></textarea>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-4">
+                                    <label class="form-label">状态</label>
+                                    <select class="form-select" name="status">
+                                        <option value="1" th:selected="${dormitory.status == null or dormitory.status == 1}">显示</option>
+                                        <option value="0" th:selected="${dormitory.status == 0}">隐藏</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">排序</label>
+                                    <input type="number" class="form-control" name="sort"
+                                           th:value="${dormitory.sort != null ? dormitory.sort : 0}">
+                                    <div class="form-text">数字越小越靠前</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i>
+                                    <span th:text="${dormitory.id != null} ? '更新' : '添加'">操作</span>
+                                </button>
+                                <a th:href="@{/admin/dormitories}" class="btn btn-outline-secondary">取消</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

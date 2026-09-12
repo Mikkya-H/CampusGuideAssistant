@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>AI 智能问答 - 智慧迎新系统</title>
+    <style>
+        /* ========== 聊天页面布局 ========== */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 140px);
+            min-height: 600px;
+            margin-top: 1rem;
+        }
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-right: 1rem;
+            overflow: hidden;
+        }
+        .chat-sidebar {
+            width: 320px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* ========== 聊天头部 ========== */
+        .chat-header {
+            background: linear-gradient(135deg, #0D7377 0%, #095557 100%);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .chat-header .bot-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .chat-header .header-info h6 { margin: 0; font-weight: 600; }
+        .chat-header .header-info small { opacity: 0.85; }
+
+        /* ========== 消息区域 ========== */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .chat-messages::-webkit-scrollbar { width: 6px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* ========== 消息气泡 ========== */
+        .message {
+            display: flex;
+            gap: 10px;
+            max-width: 85%;
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .message.bot {
+            align-self: flex-start;
+        }
+
+        .message .msg-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .message.user .msg-avatar {
+            background: #0D7377;
+            color: #fff;
+        }
+        .message.bot .msg-avatar {
+            background: #0D7377;
+            color: #fff;
+        }
+
+        .message .msg-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .message.user .msg-bubble {
+            background: linear-gradient(135deg, #0D7377, #095557);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot .msg-bubble {
+            background: #fff;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .message .msg-meta {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 4px;
+            display: flex;
+            gap: 8px;
+        }
+        .message.user .msg-meta { justify-content: flex-end; }
+
+        /* ========== 输入区域 ========== */
+        .chat-input-area {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e9ecef;
+            background: #fff;
+        }
+        .chat-input-area .input-group {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 30px;
+            overflow: hidden;
+        }
+        .chat-input-area input {
+            border: 1px solid #dee2e6;
+            border-right: none;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .chat-input-area input:focus {
+            border-color: #0D7377;
+            box-shadow: none;
+        }
+        .chat-input-area .btn-send {
+            border-radius: 0 30px 30px 0;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #0D7377, #095557);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .chat-input-area .btn-send:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        .chat-input-area .btn-send:disabled {
+            opacity: 0.6;
+            transform: none;
+        }
+
+        /* ========== 侧边栏 ========== */
+        .chat-sidebar h6 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .quick-question-item {
+            display: block;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            color: #495057;
+            text-decoration: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+        .quick-question-item:hover {
+            background: #E0F2F1;
+            border-color: #0D7377;
+            color: #0D7377;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            margin: 3px;
+            background: #E0F2F1;
+            color: #0D7377;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+        .category-badge:hover {
+            background: #0D7377;
+            color: #fff;
+        }
+
+        /* ========== 打字动画 ========== */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 768px) {
+            .chat-container { flex-direction: column; height: auto; }
+            .chat-main { margin-right: 0; margin-bottom: 1rem; min-height: 500px; }
+            .chat-sidebar { width: 100%; }
+            .message { max-width: 95%; }
+        }
+
+        /* ========== 欢迎区域 ========== */
+        .welcome-card {
+            text-align: center;
+            padding: 2rem;
+        }
+        .welcome-card .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <div class="container-fluid px-4">
+        <div class="chat-container">
+            <!-- ========== 左侧：聊天主区域 ========== -->
+            <div class="chat-main">
+                <!-- 头部 -->
+                <div class="chat-header">
+                    <div class="bot-avatar">🤖</div>
+                    <div class="header-info">
+                        <h6>🤖 哈基油油子</h6>
+                        <small>基于语义理解 · 离线+云端双引擎</small>
+                    </div>
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-primary">
+                            <i class="bi bi-database-check"></i>
+                            <span id="kb-count">--</span> 条知识
+                        </span>
+                        <button class="btn btn-sm btn-light" onclick="clearConversation()"
+                                title="清空当前对话，开始新会话">
+                            <i class="bi bi-eraser"></i> 清空对话
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 消息列表 -->
+                <div class="chat-messages" id="chatMessages">
+                    <!-- 欢迎消息 -->
+                    <div class="message bot">
+                        <div class="msg-avatar">🤖</div>
+                        <div>
+                            <div class="msg-bubble">
+                                <strong>👋 你好！我是哈基油油子</strong><br><br>
+                                我可以帮你解答关于东北石油大学入学的各种问题：<br>
+                                📋 <b>报到流程</b> · 🎖️ <b>军训安排</b> · 🏠 <b>宿舍条件</b> · 💰 <b>学费缴费</b><br>
+                                🎓 <b>奖学金</b> · 🎯 <b>社团活动</b> · 🍽️ <b>校园生活</b> · 📚 <b>更多...</b><br><br>
+                                请直接输入你的问题，我会尽力解答！<br>
+                                <small class="text-muted">💡 试试点击右侧的快捷提问~</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 输入区域 -->
+                <div class="chat-input-area">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="questionInput"
+                               placeholder="输入你的问题，如：宿舍有空调吗？"
+                               autocomplete="off" autofocus>
+                        <button class="btn btn-send" id="sendBtn" onclick="sendMessage()">
+                            <i class="bi bi-send-fill"></i> 发送
+                        </button>
+                    </div>
+                    <div class="text-muted mt-2 small text-center">
+                        按 <kbd>Enter</kbd> 发送消息 · 基于语义理解，不是关键词匹配
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== 右侧：快捷入口 ========== -->
+            <div class="chat-sidebar">
+                <!-- 快捷提问 -->
+                <h6><i class="bi bi-lightning-charge-fill text-warning"></i> 快捷提问</h6>
+                <div id="quickQuestionsList">
+                    <a class="quick-question-item" th:each="q : ${quickQuestions}"
+                       th:text="${q}" onclick="quickAsk(this.textContent)"></a>
+                </div>
+
+                <hr>
+
+                <!-- 热门问题 -->
+                <h6><i class="bi bi-fire text-danger"></i> 热门问题</h6>
+                <div id="hotQuestionsList">
+                    <a class="quick-question-item" th:each="q : ${hotQuestions}"
+                       th:text="${q}" onclick="quickAsk(this.textContent)"
+                       style="font-size:0.85rem;"></a>
+                </div>
+
+                <hr>
+
+                <!-- 分类导航 -->
+                <h6><i class="bi bi-folder2 text-info"></i> 按分类浏览</h6>
+                <div>
+                    <span class="category-badge" th:each="cat : ${categories}"
+                          th:text="${cat}" onclick="quickAsk('关于' + this.textContent + '有什么要注意的？')"></span>
+                </div>
+
+                <hr>
+
+                <!-- 小贴士 -->
+                <div class="alert alert-info small mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>使用小贴士</strong><br>
+                    ① 用简短句子提问效果更好<br>
+                    ② 支持模糊语义理解，无需精确措辞<br>
+                    ③ 未知问题会诚实告知，不胡编乱造<br>
+                    ④ 右上角浮动按钮可随时唤起聊天
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+
+    <script>
+        // ========== AI 聊天客户端逻辑 ==========
+
+        const chatMessages = document.getElementById('chatMessages');
+        const questionInput = document.getElementById('questionInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // 会话ID持久化：存 localStorage，跳转页面/刷新后返回仍可恢复上下文
+        const SESSION_KEY = 'ai_session_id';
+        let sessionId = localStorage.getItem(SESSION_KEY);
+        if (!sessionId) {
+            sessionId = generateUUID();
+            localStorage.setItem(SESSION_KEY, sessionId);
+        }
+        let isWaiting = false;
+
+        // 生成会话ID
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        }
+
+        // 加载知识库统计
+        fetch('/api/ai/stats')
+            .then(r => r.json())
+            .then(res => {
+                if (res.code === 200 && res.data) {
+                    document.getElementById('kb-count').textContent = res.data.totalKnowledge || '--';
+                }
+            }).catch(() => {});
+
+        // Enter 键发送
+        questionInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // 快捷提问
+        function quickAsk(question) {
+            questionInput.value = question;
+            sendMessage();
+            // 滚动到聊天区域
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const question = questionInput.value.trim();
+            if (!question || isWaiting) return;
+
+            // 清空输入框
+            questionInput.value = '';
+            questionInput.focus();
+
+            // 显示用户消息
+            appendMessage('user', question);
+            scrollToBottom();
+
+            // 显示"正在输入"指示器
+            const typingMsg = showTyping();
+            scrollToBottom();
+
+            isWaiting = true;
+            sendBtn.disabled = true;
+
+            // 调用API
+            fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question: question,
+                    sessionId: sessionId
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                // 移除打字指示器
+                removeTyping(typingMsg);
+
+                if (result.code === 200 && result.data) {
+                    const data = result.data;
+                    let meta = '';
+                    if (data.category && !data.isUnknown) {
+                        meta = `<span class="badge bg-info me-1">${data.category}</span>`;
+                    }
+                    if (data.confidence && !data.isUnknown) {
+                        meta += `<span>匹配度 ${(data.confidence * 100).toFixed(0)}%</span>`;
+                    }
+                    if (data.isUnknown) {
+                        meta = '<span class="badge bg-warning">未匹配到知识库</span>';
+                    }
+                    appendMessage('bot', data.answer, meta, data.isUnknown);
+                } else {
+                    appendMessage('bot', '抱歉，AI服务暂时不可用，请稍后再试。\n\n错误信息：' + (result.message || '未知错误'),
+                        '<span class="badge bg-danger">服务异常</span>', true);
+                }
+                scrollToBottom();
+            })
+            .catch(error => {
+                removeTyping(typingMsg);
+                appendMessage('bot', '网络请求失败，请检查网络连接后重试。',
+                    '<span class="badge bg-danger">网络异常</span>', true);
+                scrollToBottom();
+            })
+            .finally(() => {
+                isWaiting = false;
+                sendBtn.disabled = false;
+                questionInput.focus();
+            });
+        }
+
+        // 添加消息到聊天区域
+        function appendMessage(type, content, meta, isUnknown) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message ' + type;
+
+            const avatarIcon = type === 'user' ? '👤' : '🤖';
+            const avatarBg = type === 'user' ? 'bg-primary' : 'bg-purple';
+
+            let bubbleClass = 'msg-bubble';
+            if (isUnknown) {
+                bubbleClass += ' border-warning';
+            }
+
+            msgDiv.innerHTML = `
+                <div class="msg-avatar">${avatarIcon}</div>
+                <div>
+                    <div class="${bubbleClass}">${escapeHtml(content)}</div>
+                    ${meta ? `<div class="msg-meta">${meta}</div>` : ''}
+                </div>
+            `;
+
+            chatMessages.appendChild(msgDiv);
+            return msgDiv;
+        }
+
+        // 显示打字动画指示器
+        function showTyping() {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message bot';
+            msgDiv.id = 'typingIndicator';
+            msgDiv.innerHTML = `
+                <div class="msg-avatar">🤖</div>
+                <div>
+                    <div class="msg-bubble">
+                        <div class="typing-indicator">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.appendChild(msgDiv);
+            return msgDiv;
+        }
+
+        // 移除打字指示器
+        function removeTyping(msgDiv) {
+            if (msgDiv && msgDiv.parentNode) {
+                msgDiv.parentNode.removeChild(msgDiv);
+            }
+        }
+
+        // 滚动到底部
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 100);
+        }
+
+        // HTML转义
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 页面加载完成后：恢复历史记录 + 聚焦输入框
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHistory();
+            questionInput.focus();
+            scrollToBottom();
+        });
+
+        // 从后端恢复本会话的历史聊天记录（跳转页面后返回仍可见）
+        function loadHistory() {
+            fetch('/api/ai/history?sessionId=' + encodeURIComponent(sessionId))
+                .then(r => r.json())
+                .then(res => {
+                    if (res.code === 200 && res.data && res.data.messages) {
+                        res.data.messages.forEach(m => {
+                            appendMessage('user', m.question);
+                            appendMessage('bot', m.answer,
+                                '<span class="badge bg-secondary">历史消息</span>', false);
+                        });
+                        if (res.data.messages.length > 0) scrollToBottom();
+                    }
+                }).catch(() => {});
+        }
+
+        // 清空对话：换新会话ID，界面只保留欢迎消息
+        function clearConversation() {
+            sessionId = generateUUID();
+            localStorage.setItem(SESSION_KEY, sessionId);
+            const msgs = chatMessages.querySelectorAll('.message');
+            msgs.forEach((el, idx) => { if (idx > 0) el.remove(); }); // 保留第1条欢迎消息
+            appendMessage('bot', '🧹 对话已清空，开始新会话啦！有什么问题请直接输入~', '', false);
+            scrollToBottom();
+        }
+    </script>
+</body>
+</html>

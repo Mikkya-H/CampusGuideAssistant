@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>食堂指南 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#D97706,#F59E0B)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <!-- 页面头部 -->
+    <section class="page-header page-header--cafeteria">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-cup-hot"></i> 食堂指南</h2>
+            <p class="mb-0 opacity-75">校园美食地图，满足你的味蕾</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 空状态 -->
+        <th:block th:if="${#lists.isEmpty(cafeterias)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-shop" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无食堂信息</h4>
+                <p>食堂信息正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 食堂卡片 -->
+        <div class="row g-4" th:unless="${#lists.isEmpty(cafeterias)}">
+            <div class="col-md-6 col-lg-4" th:each="cafeteria : ${cafeterias}">
+                <div class="card h-100 border-0 shadow-sm hover-shadow">
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold" th:text="${cafeteria.name}">食堂名称</h5>
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt-fill text-danger"></i>
+                                <span th:text="${cafeteria.location}">位置</span>
+                            </small>
+                        </div>
+                        <div class="mb-3" th:if="${cafeteria.openingHours}">
+                            <small class="text-muted">
+                                <i class="bi bi-clock-fill text-success"></i>
+                                <span th:text="${cafeteria.openingHours}">营业时间</span>
+                            </small>
+                        </div>
+                        <p class="text-muted small mb-3" th:text="${cafeteria.description}">食堂描述</p>
+                        <div th:if="${cafeteria.specialties}">
+                            <small class="fw-bold text-warning">
+                                <i class="bi bi-star-fill"></i> 特色美食：
+                            </small>
+                            <small class="text-muted" th:text="${cafeteria.specialties}">特色菜</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

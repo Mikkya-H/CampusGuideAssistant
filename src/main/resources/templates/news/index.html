@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/common :: head}"></th:block>
+    <title>新闻公告 - 智慧迎新系统</title>
+    <style>#mainNav{background:linear-gradient(135deg,#0284C7,#0EA5E9)!important;}</style>
+</head>
+<body>
+    <th:block th:replace="~{fragments/common :: navbar}"></th:block>
+
+    <section class="page-header page-header--news">
+        <div class="container">
+            <h2 class="fw-bold mb-1"><i class="bi bi-newspaper"></i> 新闻公告</h2>
+            <p class="mb-0 opacity-75">了解学校最新动态与通知</p>
+        </div>
+    </section>
+
+    <div class="container py-5">
+        <!-- 分类标签 -->
+        <div class="text-center mb-4">
+            <a th:href="@{/news}" class="btn btn-sm me-2" th:classappend="${currentCategory == null} ? 'btn-primary' : 'btn-outline-primary'">全部</a>
+            <a th:href="@{/news(category=通知公告)}" class="btn btn-sm me-2" th:classappend="${currentCategory == '通知公告'} ? 'btn-primary' : 'btn-outline-primary'">通知公告</a>
+            <a th:href="@{/news(category=校园新闻)}" class="btn btn-sm me-2" th:classappend="${currentCategory == '校园新闻'} ? 'btn-primary' : 'btn-outline-primary'">校园新闻</a>
+            <a th:href="@{/news(category=学术动态)}" class="btn btn-sm me-2" th:classappend="${currentCategory == '学术动态'} ? 'btn-primary' : 'btn-outline-primary'">学术动态</a>
+            <a th:href="@{/news(category=学生活动)}" class="btn btn-sm" th:classappend="${currentCategory == '学生活动'} ? 'btn-primary' : 'btn-outline-primary'">学生活动</a>
+        </div>
+
+        <!-- 空状态 -->
+        <th:block th:if="${newsList == null or #lists.isEmpty(newsList)}">
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-newspaper" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">暂无新闻</h4>
+                <p>新闻资讯正在更新中，敬请期待</p>
+            </div>
+        </th:block>
+
+        <!-- 新闻列表 -->
+        <div class="row g-4" th:if="${newsList != null and !#lists.isEmpty(newsList)}">
+            <div class="col-md-6" th:each="item : ${newsList}">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                <a th:href="@{/news/{id}(id=${item.id})}" class="text-decoration-none text-dark" th:text="${item.title}">标题</a>
+                            </h5>
+                            <span class="badge bg-primary ms-2 flex-shrink-0" th:text="${item.category}">分类</span>
+                        </div>
+                        <p class="text-muted small" th:text="${item.summary}">摘要</p>
+                        <div class="d-flex text-muted small">
+                            <span th:if="${item.createTime != null}">
+                                <i class="bi bi-calendar"></i>
+                                <span th:text="${#temporals.format(item.createTime, 'yyyy-MM-dd')}">日期</span>
+                            </span>
+                            <span class="ms-3"><i class="bi bi-eye"></i> <span th:text="${item.viewCount}">0</span></span>
+                            <span class="ms-3" th:if="${item.author != null}"><i class="bi bi-person"></i> <span th:text="${item.author}">作者</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:replace="~{fragments/common :: footer}"></th:block>
+    <th:block th:replace="~{fragments/common :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- ========== 公共头部 ========== -->
+<th:block th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</th:block>
+
+<!-- ========== 导航栏 ========== -->
+<th:block th:fragment="navbar">
+    <nav id="mainNav" class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm" style="background: var(--gradient-primary);">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center fw-bold" th:href="@{/}">
+                <img th:src="@{/images/校徽.jpg}" alt="校徽" height="40" class="me-2" style="border-radius: 4px;">
+                <span class="text-white" style="font-size: 1.15rem; letter-spacing: 2px;">东北石油大学</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="bi bi-house"></i> 首页</a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/campus}"><i class="bi bi-geo-alt"></i> 校园导览</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-book"></i> 迎新指南
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/guide/registration}">📋 报到流程</a></li>
+                            <li><a class="dropdown-item" th:href="@{/guide/faq}">❓ 常见问题</a></li>
+                            <li><a class="dropdown-item" th:href="@{/guide/majors}">🎓 专业介绍</a></li>
+                            <li><a class="dropdown-item" th:href="@{/guide/teachers}">👨‍🏫 教师名录</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-heart"></i> 校园生活
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" th:href="@{/life/dormitory}">🏠 宿舍信息</a></li>
+                            <li><a class="dropdown-item" th:href="@{/life/cafeteria}">🍽️ 食堂指南</a></li>
+                            <li><a class="dropdown-item" th:href="@{/life/clubs}">🎯 社团风采</a></li>
+                            <li><a class="dropdown-item" th:href="@{/life/activities}">🎉 校园活动</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/forum}"><i class="bi bi-chat-dots"></i> 交流社区</a></li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link position-relative" th:href="@{/ai-chat}">
+                        <i class="bi bi-robot"></i> AI问答
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:0.6rem;">
+                            新
+                        </span>
+                    </a></li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()"><a class="nav-link position-relative" th:href="@{/deepseek-chat}">
+                        <i class="bi bi-stars"></i> DeepSeek问答
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size:0.6rem;">
+                            新
+                        </span>
+                    </a></li>
+                    <li class="nav-item"><a class="nav-link" th:href="@{/news}"><i class="bi bi-newspaper"></i> 新闻公告</a></li>
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="nav-link text-warning fw-bold" th:href="@{/admin}"><i class="bi bi-gear"></i> 后台管理</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/login}"><i class="bi bi-box-arrow-in-right"></i> 登录</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/register}"><i class="bi bi-person-plus"></i> 注册</a>
+                    </li>
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name">用户</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" th:href="@{/user/profile}"><i class="bi bi-person"></i> 个人中心</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post" class="d-grid px-2">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">退出登录</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</th:block>
+
+<!-- ========== 页脚 ========== -->
+<th:block th:fragment="footer">
+    <footer style="background: #1B2A2F; color: #ecf0f1;" class="py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white"><i class="bi bi-mortarboard-fill"></i> 智慧迎新系统</h5>
+                    <p style="color: #bdc3c7;" class="small">帮助新生快速熟悉学校环境，了解校园生活，辅助新生更好融入大学生活。</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white">快速导航</h5>
+                    <ul class="list-unstyled small">
+                        <li><a th:href="@{/guide/registration}" style="color: #bdc3c7;" class="text-decoration-none">📋 报到流程指引</a></li>
+                        <li><a th:href="@{/guide/faq}" style="color: #bdc3c7;" class="text-decoration-none">❓ 常见问题解答</a></li>
+                        <li><a th:href="@{/campus}" style="color: #bdc3c7;" class="text-decoration-none">🗺️ 校园地图导览</a></li>
+                        <li><a th:href="@{/forum}" style="color: #bdc3c7;" class="text-decoration-none">💬 新生交流社区</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-white">联系我们</h5>
+                    <p style="color: #bdc3c7;" class="small mb-1"><i class="bi bi-geo-alt"></i> 黑龙江省大庆市龙凤区</p>
+                    <p style="color: #bdc3c7;" class="small mb-1"><i class="bi bi-telephone"></i> 0459-6503XXX</p>
+                    <p style="color: #bdc3c7;" class="small mb-1"><i class="bi bi-envelope"></i> freshman@nepu.edu.cn</p>
+                </div>
+            </div>
+            <hr style="border-color: #4a6278;" class="my-3">
+            <div class="text-center small" style="color: #95a5a6;">
+                <span>&copy; 2026 智慧迎新系统 | 东北石油大学 软件工程系 综合项目实训</span>
+            </div>
+        </div>
+    </footer>
+</th:block>
+
+<!-- ========== 公共脚本 ========== -->
+<th:block th:fragment="scripts">
+    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/main.js}"></script>
+
+    <!-- ========== AI 浮动聊天按钮 (全局) ========== -->
+    <style>
+        .ai-float-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0D7377 0%, #095557 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 4px 20px rgba(102,16,242,0.4);
+            cursor: pointer;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: floatPulse 2s ease-in-out infinite;
+        }
+        .ai-float-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 28px rgba(102,16,242,0.55);
+        }
+        @keyframes floatPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(102,16,242,0.4); }
+            50% { box-shadow: 0 4px 35px rgba(102,16,242,0.7); }
+        }
+        .ai-float-btn .badge-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 14px;
+            height: 14px;
+            background: #00e676;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            animation: dotBlink 2s infinite;
+        }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* 迷你聊天窗口 */
+        .ai-mini-chat {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 9998;
+            width: 360px;
+            height: 480px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .ai-mini-chat.show { display: flex; }
+        .ai-mini-header {
+            background: linear-gradient(135deg, #0D7377, #095557);
+            color: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .ai-mini-header .btn-close-mini {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-mini-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        .ai-mini-input-area {
+            padding: 10px 12px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 8px;
+        }
+        .ai-mini-input-area input {
+            flex: 1;
+            border: 1px solid #dee2e6;
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+        .ai-mini-input-area input:focus { border-color: #0D7377; }
+        .ai-mini-input-area button {
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #0D7377, #095557);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .mini-msg {
+            max-width: 90%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .mini-msg.user {
+            align-self: flex-end;
+            background: #0D7377;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .mini-msg.bot {
+            align-self: flex-start;
+            background: #fff;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 4px;
+        }
+        .mini-quick-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            padding: 4px 0;
+        }
+        .mini-quick-tag {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            background: #E0F2F1;
+            color: #0D7377;
+            border-radius: 12px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s;
+        }
+        .mini-quick-tag:hover { background: #0D7377; color: #fff; }
+        .mini-open-full {
+            font-size: 0.75rem;
+            color: #0D7377;
+            cursor: pointer;
+            text-align: center;
+            padding: 4px;
+            text-decoration: none;
+        }
+        .mini-open-full:hover { text-decoration: underline; }
+    </style>
+
+    <!-- 浮动按钮（仅登录用户可见：AI问答功能需登录使用） -->
+    <th:block sec:authorize="isAuthenticated()">
+    <button class="ai-float-btn" id="aiFloatBtn" title="哈基油油子" onclick="toggleMiniChat()">
+        🤖
+        <span class="badge-dot"></span>
+    </button>
+
+    <!-- 迷你聊天窗口 -->
+    <div class="ai-mini-chat" id="aiMiniChat">
+        <div class="ai-mini-header">
+            <span>🤖 哈基油油子</span>
+            <button class="btn-close-mini" onclick="toggleMiniChat()">✕</button>
+        </div>
+        <div class="ai-mini-messages" id="aiMiniMessages">
+            <div class="mini-msg bot">
+                👋 你好！我是哈基油油子~<br>
+                有任何入学问题都可以问我！<br>
+                <div class="mini-quick-row" style="margin-top:6px;">
+                    <span class="mini-quick-tag" onclick="miniQuickAsk('宿舍有空调吗？')">宿舍有空调吗</span>
+                    <span class="mini-quick-tag" onclick="miniQuickAsk('报到需要带什么？')">报到带什么</span>
+                    <span class="mini-quick-tag" onclick="miniQuickAsk('军训多久？')">军训多久</span>
+                </div>
+            </div>
+        </div>
+        <div class="ai-mini-input-area">
+            <input type="text" id="miniQuestionInput" placeholder="输入问题..."
+                   onkeydown="if(event.key==='Enter')miniSendMessage()">
+            <button onclick="miniSendMessage()">➤</button>
+        </div>
+        <a href="/ai-chat" class="mini-open-full">
+            <i class="bi bi-box-arrow-up-right"></i> 打开完整聊天页面
+        </a>
+    </div>
+    </th:block>
+
+    <script>
+        // ========== 浮动迷你聊天窗口逻辑 ==========
+        let miniSessionId = 'mini-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        let miniWaiting = false;
+
+        function toggleMiniChat() {
+            const chat = document.getElementById('aiMiniChat');
+            const isShowing = chat.classList.contains('show');
+            if (isShowing) {
+                chat.classList.remove('show');
+            } else {
+                chat.classList.add('show');
+                document.getElementById('miniQuestionInput').focus();
+                scrollMiniToBottom();
+            }
+        }
+
+        function miniQuickAsk(question) {
+            document.getElementById('miniQuestionInput').value = question;
+            miniSendMessage();
+        }
+
+        function miniSendMessage() {
+            const input = document.getElementById('miniQuestionInput');
+            const question = input.value.trim();
+            if (!question || miniWaiting) return;
+
+            input.value = '';
+            input.focus();
+            miniWaiting = true;
+
+            // 显示用户消息
+            appendMiniMsg('user', question);
+            const typingDiv = showMiniTyping();
+            scrollMiniToBottom();
+
+            fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question, sessionId: miniSessionId })
+            })
+            .then(r => r.json())
+            .then(result => {
+                removeMiniTyping(typingDiv);
+                if (result.code === 200 && result.data) {
+                    appendMiniMsg('bot', result.data.answer);
+                } else {
+                    appendMiniMsg('bot', '抱歉，AI服务暂时不可用~');
+                }
+                scrollMiniToBottom();
+            })
+            .catch(() => {
+                removeMiniTyping(typingDiv);
+                appendMiniMsg('bot', '网络请求失败，请稍后再试~');
+                scrollMiniToBottom();
+            })
+            .finally(() => {
+                miniWaiting = false;
+            });
+        }
+
+        function appendMiniMsg(type, content) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'mini-msg ' + type;
+            msgDiv.innerHTML = escapeMiniHtml(content);
+            document.getElementById('aiMiniMessages').appendChild(msgDiv);
+        }
+
+        function showMiniTyping() {
+            const div = document.createElement('div');
+            div.className = 'mini-msg bot';
+            div.id = 'miniTyping';
+            div.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            document.getElementById('aiMiniMessages').appendChild(div);
+            return div;
+        }
+
+        function removeMiniTyping(div) {
+            if (div && div.parentNode) div.parentNode.removeChild(div);
+        }
+
+        function scrollMiniToBottom() {
+            setTimeout(() => {
+                const el = document.getElementById('aiMiniMessages');
+                el.scrollTop = el.scrollHeight;
+            }, 100);
+        }
+
+        function escapeMiniHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 如果当前在ai-chat页面，隐藏浮动按钮（避免与完整聊天窗口冲突）
+        // （未登录时浮动按钮不渲染，需判空避免脚本报错）
+        if (window.location.pathname === '/ai-chat' && document.getElementById('aiFloatBtn')) {
+            document.getElementById('aiFloatBtn').style.display = 'none';
+            document.getElementById('aiMiniChat').style.display = 'none';
+        }
+    </script>
+</th:block>
+
+</html>
