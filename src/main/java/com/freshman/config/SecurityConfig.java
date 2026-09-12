@@ -13,7 +13,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Spring Security 安全配置类
@@ -64,10 +66,10 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/register", "/about").permitAll()
                 // 校园导览、迎新指南、校园生活模块 — 允许访客浏览
                 .requestMatchers("/campus/**", "/guide/**", "/life/**").permitAll()
-                // AI 问答 — 需要登录后才能使用（页面和接口均受保护）
+                // AI 问答 — 登录即可使用（学生/老师/管理员）
                 .requestMatchers("/ai-chat", "/api/ai/**").authenticated()
-                // DeepSeek 问答 — 需要登录后才能使用（页面和接口均受保护）
-                .requestMatchers("/deepseek-chat", "/api/deepseek/**").authenticated()
+                // DeepSeek 问答 — 仅老师和管理员可用（学生无权限）
+                .requestMatchers("/deepseek-chat", "/api/deepseek/**").hasAnyRole("TEACHER", "ADMIN")
                 // 导航 API — 允许访客调用
                 .requestMatchers("/api/**").permitAll()
                 // 新闻公告 — 允许访客浏览
@@ -106,14 +108,19 @@ public class SecurityConfig {
 
     /**
      * 用户详情服务Bean
-     * 功能：从数据库加载用户信息，供Spring Security进行认证使用
+     * 功能：从数据库加载用户信息及其真实角色，供Spring Security进行认证使用
      *       优先检查内置管理员账号，再查询数据库中的普通用户
+     *       角色从 sys_user_role / sys_role 表加载（支持管理员/老师/学生等）
      *
      * @param userService 用户服务，用于从数据库查询用户
+     * @param userRoleMapper 用户-角色关联Mapper
+     * @param roleMapper 角色Mapper
      * @return UserDetailsService实例，Spring Security通过它获取用户认证信息
      */
     @Bean
-    public UserDetailsService userDetailsService(UserService userService) {
+    public UserDetailsService userDetailsService(UserService userService,
+                                                  com.freshman.mapper.UserRoleMapper userRoleMapper,
+                                                  com.freshman.mapper.RoleMapper roleMapper) {
         return username -> {
             // 内置管理员账号（保留一个默认管理员，防止数据库中管理员被误删后无法登录后台）
             if ("admin".equals(username)) {
@@ -132,12 +139,25 @@ public class SecurityConfig {
             if (user.getStatus() == 0) {
                 throw new RuntimeException("用户已被禁用");
             }
-            // 默认赋予学生角色权限
-            String role = "ROLE_STUDENT";
+            // 从关联表加载该用户的真实角色（可能多个）
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            List<com.freshman.entity.UserRole> userRoles = userRoleMapper.selectList(
+                    new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.freshman.entity.UserRole>()
+                            .eq(com.freshman.entity.UserRole::getUserId, user.getId()));
+            for (com.freshman.entity.UserRole ur : userRoles) {
+                com.freshman.entity.Role role = roleMapper.selectById(ur.getRoleId());
+                if (role != null && role.getStatus() == 1) {
+                    authorities.add(new SimpleGrantedAuthority(role.getRoleCode()));
+                }
+            }
+            // 兜底：没有任何角色时默认给学生角色
+            if (authorities.isEmpty()) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_STUDENT"));
+            }
             return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(role))
+                authorities
             );
         };
     }

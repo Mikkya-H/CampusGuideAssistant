@@ -18,6 +18,15 @@
             </div>
         </div>
 
+        <div class="alert alert-success alert-dismissible fade show" th:if="${param.changed}">
+            ✅ 角色修改成功！该用户重新登录后生效。
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="alert alert-warning alert-dismissible fade show" th:if="${param['error'] != null and #strings.contains(param['error'],'role')}">
+            ⚠️ 角色修改失败：内置管理员账号不允许修改角色。
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
         <div class="card border-0 shadow-sm">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
@@ -44,7 +53,7 @@
                             <td th:text="${user.studentNo != null ? user.studentNo : '-'}">学号</td>
                             <td>
                                 <span class="badge"
-                                      th:classappend="${user.roleName == '管理员'} ? 'bg-danger' : 'bg-primary'"
+                                      th:classappend="${user.roleName == '管理员'} ? 'bg-danger' : (${user.roleName == '老师'} ? 'bg-warning text-dark' : 'bg-primary')"
                                       th:text="${user.roleName != null ? user.roleName : '学生'}">角色</span>
                             </td>
                             <td>
@@ -52,12 +61,29 @@
                                       th:text="${user.status == 1} ? '正常' : '禁用'">状态</span>
                             </td>
                             <td class="text-center">
-                                <a th:href="@{/admin/users/toggle/{id}(id=${user.id})}"
-                                   class="btn btn-sm" th:classappend="${user.status == 1} ? 'btn-outline-warning' : 'btn-outline-success'"
-                                   th:attr="onclick=${user.status == 1} ? 'return confirm(\'确定要禁用用户「'+${user.realName}+'」吗？\')' : 'return confirm(\'确定要启用用户「'+${user.realName}+'」吗？\')'"
-                                   th:text="${user.status == 1} ? '禁用' : '启用'">
-                                    操作
-                                </a>
+                                <div class="d-flex justify-content-center align-items-center gap-1 flex-wrap">
+                                    <!-- 角色分发表单（内置admin账号不显示） -->
+                                    <form th:if="${user.username != 'admin'}"
+                                          th:action="@{/admin/users/role/{id}(id=${user.id})}"
+                                          method="post" class="d-flex align-items-center gap-1"
+                                          th:attr="onsubmit='return confirm(\'确定修改用户「'+${user.realName}+'」的角色吗？修改后立即生效，需重新登录。\')'">
+                                        <select name="roleId" class="form-select form-select-sm" style="width:auto;min-width:96px;" required>
+                                            <option th:each="role : ${roles}"
+                                                    th:value="${role.id}"
+                                                    th:text="${role.roleName}"
+                                                    th:selected="${user.roleName != null && user.roleName == role.roleName}">角色</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-outline-primary" title="分发角色">
+                                            <i class="bi bi-person-check"></i> 授权
+                                        </button>
+                                    </form>
+                                    <a th:href="@{/admin/users/toggle/{id}(id=${user.id})}"
+                                       class="btn btn-sm" th:classappend="${user.status == 1} ? 'btn-outline-warning' : 'btn-outline-success'"
+                                       th:attr="onclick=${user.status == 1} ? 'return confirm(\'确定要禁用用户「'+${user.realName}+'」吗？\')' : 'return confirm(\'确定要启用用户「'+${user.realName}+'」吗？\')'"
+                                       th:text="${user.status == 1} ? '禁用' : '启用'">
+                                        操作
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(users)}">

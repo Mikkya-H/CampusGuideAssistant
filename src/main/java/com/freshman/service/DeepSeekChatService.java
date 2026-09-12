@@ -62,6 +62,13 @@ public class DeepSeekChatService {
     @Value("${app.ai.deepseek.useRag:false}")
     private boolean useRag;
 
+    /**
+     * 最大输出 token 数（额度控制）。0 = 不限制（请求中不传 max_tokens，
+     * 由模型上限决定，V4 系列最高 384K）；大于 0 时传入该值控制输出长度与费用。
+     */
+    @Value("${app.ai.deepseek.maxTokens:0}")
+    private int maxTokens;
+
     public DeepSeekChatService(AiQaService aiQaService, AiChatHistoryMapper chatHistoryMapper) {
         this.aiQaService = aiQaService;
         this.chatHistoryMapper = chatHistoryMapper;
@@ -134,11 +141,24 @@ public class DeepSeekChatService {
         }
 
         // ---- 构建 OpenAI 兼容格式请求体（DeepSeek 官方API兼容此格式） ----
-        String requestBody = String.format(
-                "{\"model\":\"%s\",\"messages\":%s,\"temperature\":0.7,\"max_tokens\":800}",
-                model,
-                JSONUtil.toJsonStr(messages)
-        );
+        // thinking.type=disabled：V4 系列默认开启思考模式，思考内容走 reasoning_content 字段
+        // 且会消耗 max_tokens 导致正文 content 为空，问答场景显式关闭（更快更省）
+        // maxTokens>0 时才传 max_tokens 限制输出长度；0/不配置 = 不限制输出额度
+        String requestBody;
+        if (maxTokens > 0) {
+            requestBody = String.format(
+                    "{\"model\":\"%s\",\"messages\":%s,\"temperature\":0.7,\"max_tokens\":%d,\"thinking\":{\"type\":\"disabled\"}}",
+                    model,
+                    JSONUtil.toJsonStr(messages),
+                    maxTokens
+            );
+        } else {
+            requestBody = String.format(
+                    "{\"model\":\"%s\",\"messages\":%s,\"temperature\":0.7,\"thinking\":{\"type\":\"disabled\"}}",
+                    model,
+                    JSONUtil.toJsonStr(messages)
+            );
+        }
 
         AiQaService.ChatResponse resp = new AiQaService.ChatResponse();
         resp.setQuestion(question);
@@ -163,6 +183,10 @@ public class DeepSeekChatService {
             if (code == 200) {
                 String body = readStream(conn.getInputStream());
                 String content = extractJsonField(body, "content");
+                if (content == null || content.isEmpty()) {
+                    // 兜底：若服务端开启了思考模式，正文可能为空、回答在 reasoning_content 中
+                    content = extractJsonField(body, "reasoning_content");
+                }
                 if (content != null && !content.isEmpty()) {
                     resp.setAnswer(content);
                     resp.setConfidence(0.95);
@@ -174,6 +198,8 @@ public class DeepSeekChatService {
                 }
                 log.warn("[DeepSeek问答] 响应中未找到content字段: {}",
                         body.substring(0, Math.min(200, body.length())));
+                // content 仍为空：给出友好提示，避免 answer 为 null
+                resp.setAnswer("😅 DeepSeek 返回了空回答（可能是思考内容过长被截断），请重试一次。");
             } else if (code == 401) {
                 resp.setAnswer("🔑 DeepSeek API Key 无效或已被删除，请到 https://platform.deepseek.com 检查后更新 application.yml 配置。");
             } else if (code == 402) {
@@ -258,7 +284,8 @@ public class DeepSeekChatService {
             history.setUserId(userId);
             history.setSessionId(sessionId);
             history.setQuestion(question);
-            history.setAnswer(answer);
+            // answer 为数据库非空字段，空值给占位文本，避免 INSERT 报错
+            history.setAnswer(answer == null || answer.isEmpty() ? "（无有效回答）" : answer);
             history.setConfidence(null);
             history.setIsUnknown(0);
             history.setIpAddress(ipAddress);

@@ -28,6 +28,8 @@ public class AdminController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final RoleMapper roleMapper;
+    private final UserRoleMapper userRoleMapper;
     private final NewsMapper newsMapper;
     private final BuildingMapper buildingMapper;
     private final FaqMapper faqMapper;
@@ -44,6 +46,7 @@ public class AdminController {
      * 构造器注入所有Mapper和Service
      */
     public AdminController(UserService userService, UserMapper userMapper,
+                          RoleMapper roleMapper, UserRoleMapper userRoleMapper,
                           NewsMapper newsMapper,
                           BuildingMapper buildingMapper, FaqMapper faqMapper,
                           MajorMapper majorMapper, TeacherMapper teacherMapper,
@@ -52,6 +55,8 @@ public class AdminController {
                           ActivityMapper activityMapper, ForumPostMapper postMapper) {
         this.userService = userService;
         this.userMapper = userMapper;
+        this.roleMapper = roleMapper;
+        this.userRoleMapper = userRoleMapper;
         this.newsMapper = newsMapper;
         this.buildingMapper = buildingMapper;
         this.faqMapper = faqMapper;
@@ -180,7 +185,39 @@ public class AdminController {
     @GetMapping("/users")
     public String userList(Model model) {
         model.addAttribute("users", userMapper.findAllWithRoles());
+        // 所有可用角色（管理员在用户管理页可为用户分发角色）
+        var roleWrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Role>();
+        roleWrapper.eq(Role::getStatus, 1).orderByAsc(Role::getSort);
+        model.addAttribute("roles", roleMapper.selectList(roleWrapper));
         return "admin/users";
+    }
+
+    /**
+     * 分发/修改用户角色（仅管理员可用，/admin/** 已由 SecurityConfig 保护）
+     * 功能：将指定用户的角色更新为所选角色（先删除旧关联，再写入新关联）
+     *
+     * @param id     用户ID
+     * @param roleId 目标角色ID（表单参数）
+     * @return 重定向回用户管理列表
+     */
+    @PostMapping("/users/role/{id}")
+    public String changeRole(@PathVariable Long id, @RequestParam Long roleId) {
+        // 防呆：内置管理员(用户名admin)不允许改动角色，避免误操作失去管理能力
+        User target = userService.getById(id);
+        Role newRole = roleMapper.selectById(roleId);
+        if (target == null || newRole == null || "admin".equals(target.getUsername())) {
+            return "redirect:/admin/users?error=role";
+        }
+        // 删除该用户旧的角色关联
+        var delWrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<UserRole>();
+        delWrapper.eq(UserRole::getUserId, id);
+        userRoleMapper.delete(delWrapper);
+        // 写入新的角色关联
+        UserRole ur = new UserRole();
+        ur.setUserId(id);
+        ur.setRoleId(roleId);
+        userRoleMapper.insert(ur);
+        return "redirect:/admin/users?changed=" + id;
     }
 
     /**
